@@ -28,6 +28,51 @@ class G(dict):
     def print(self, sep=': ', end='\n', file=None):
         return kvprint(self, sep=sep, end=end, file=file)
 
+class GView(object):
+    def __init__(self, dict_=None):
+        if dict_ is None:
+            dict_ = dict()
+        object.__setattr__(self, '_dict', dict_)
+
+    def __getattr__(self, k):
+        if k not in self.raw():
+            raise AttributeError
+        return self.raw()[k]
+
+    def __setattr__(self, k, v):
+        self.raw()[k] = v
+
+    def __delattr__(self, k):
+        del self.raw()[k]
+
+    def __getitem__(self, k):
+        return self.raw()[k]
+
+    def __setitem__(self, k, v):
+        self.raw()[k] = v
+
+    def __delitem__(self, k):
+        del self.raw()[k]
+
+    def __contains__(self, k):
+        return k in self.raw()
+
+    def __iter__(self):
+        return iter(self.raw().items())
+
+    def raw(self):
+        return object.__getattribute__(self, '_dict')
+
+    def update(self, other):
+        self.raw().update(other)
+
+    def copy(self):
+        return GView(self.raw().copy())
+
+    def print(self, sep=': ', end='\n', file=None):
+        return kvprint(self.raw(), sep=sep, end=end, file=file)
+
+
 
 def kvprint(data, indent=0, sep=' : ', end='\n', max_key_len=None, file=None):
     if len(data) == 0:

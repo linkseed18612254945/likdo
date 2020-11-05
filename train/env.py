@@ -3,6 +3,7 @@ from utils.logger import get_logger
 import torch
 import os
 import time
+import tqdm
 
 logger = get_logger(__file__)
 
@@ -11,9 +12,6 @@ class TrainEnv(object):
         self._model = model
         self._optimizer = optimizer
         self._config = config
-
-        self._train_loader = None
-        self._validation_loader = None
 
         self._train_event_manager = SimpleEventRegistry({
             'epoch:before', 'epoch:after',
@@ -118,3 +116,10 @@ class TrainEnv(object):
         self.trigger_event('step:after', self)
 
         return loss, monitors, output_dict, extra
+
+    def train_epoch(self, train_loader, epoch, meters):
+        self._model.train()
+        for batch in tqdm.tqdm(train_loader, desc=f'Epoch {epoch}, Training'):
+            optimizer.zero_grad()
+            img = batch[0].to(device)
+            caption = batch[1].to(device)

@@ -8,11 +8,14 @@
 # This file is part of NSCL-PyTorch.
 # Distributed under terms of the MIT license.
 from collections import Counter
-
+import tqdm
 import nltk
 import six
 from utils import io
 from pycocotools.coco import COCO
+from utils.logger import get_logger
+
+logger = get_logger(__file__)
 
 __all__ = ['Vocab']
 
@@ -20,16 +23,6 @@ EBD_PAD = EBD_ALL_ZEROS = '<pad>'
 EBD_UNKNOWN = '<unk>'
 EBD_BOS = '<bos>'
 EBD_EOS = '<eos>'
-
-class Tokenizer(object):
-    def __init__(self, f=None):
-        self.tokenizer = f
-
-    def registry_method(self, f):
-        self.tokenizer = f
-
-    def tokenize(self, s):
-        self.tokenizer(s)
 
 
 class Vocab(object):
@@ -126,22 +119,19 @@ def get_sentences_from_txt(path):
         sentences = f.read().splitlines()
     return sentences
 
-def build_caption_vocab(json_paths, dataset_names, vocab_path=None,
-                        threshold=0, tokenizer=Tokenizer(nltk.tokenize.word_tokenize)):
+def build_caption_vocab(json_paths, dataset_names, vocab_path=None, threshold=0):
+    logger.critical(f"Start build vocab for {';'.join(dataset_names)}")
     counter = Counter()
     for path, data_name in zip(json_paths, dataset_names):
         if data_name == 'coco':
-            captions = get_captions_from_coco_json(path)
+            captions = get_captions_from_flickr_json(path)
         elif data_name == 'f8k' or data_name == 'f30k':
             captions = get_captions_from_flickr_json(path)
         else:
             captions = get_sentences_from_txt(path)
-        for i, caption in enumerate(captions):
-            tokens = (tokenizer.tokenize(caption.lower().decode('utf-8')))
+        for caption in tqdm.tqdm(captions, desc=f'Tokenize {data_name}'):
+            tokens = nltk.tokenize.word_tokenize(str(caption).lower())
             counter.update(tokens)
-
-            if i % 1000 == 0:
-                print(("[%d/%d] tokenized the captions." % (i, len(captions))))
 
     # Discard if the occurrence of the word is less than min_word_cnt.
     words = [word for word, cnt in list(counter.items()) if cnt >= threshold]
@@ -158,13 +148,16 @@ def build_caption_vocab(json_paths, dataset_names, vocab_path=None,
         vocab.add_word(word)
     if vocab_path is not None:
         vocab.dump_json(vocab_path)
+    logger.critical(f"Success build vocab for {';'.join(dataset_names)}, saved in {vocab_path}")
     return vocab
 
 
 if __name__ == '__main__':
     f8k_path = '/home/ubuntu/likun/image_data/caption/dataset_flickr8k.json'
-    f8k_vocab_path = '/home/ubuntu/likun/image_data/flickr8k_vocab.json'
+    f8k_vocab_path = '/home/ubuntu/likun/likdo/flickr8k_vocab.json'
     f30k_path = '/home/ubuntu/likun/image_data/caption/dataset_flickr30k.json'
-    f30k_vocab_path = '/home/ubuntu/likun/image_data/flickr30k_vocab.json'
+    f30k_vocab_path = '/home/ubuntu/likun/likdo/flickr30k_vocab.json'
+    coco_path = '/home/ubuntu/likun/image_data/caption/dataset_coco.json'
+    coco_vocab_path = '/home/ubuntu/likun/likdo/coco_caption_vocab.json'
 
-    build_caption_vocab(json_paths=(f8k_path,), dataset_names=('f8k',), vocab_path=f8k_vocab_path)
+    build_caption_vocab(json_paths=(coco_path,), dataset_names=('coco',), vocab_path=coco_vocab_path)

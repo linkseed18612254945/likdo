@@ -1,13 +1,14 @@
 import torch
 from torchvision import transforms
 from torch.utils.data import dataset
-from utils import io, container
+from utils import io
 from datasets.vocab import Vocab
 import os
 import random
 import nltk
 from PIL import Image
-
+from datasets.transforms import get_image_transform
+from torch.utils.data import dataloader, random_split
 
 def flickr_annotation(caption_json, caption_per_image):
     annotations = dict()
@@ -24,8 +25,8 @@ def flickr_annotation(caption_json, caption_per_image):
             img_index += 1
     return annotations
 
-def coco_annotation(caption_json):
-    pass
+def coco_annotation(caption_json, caption_per_image):
+    return flickr_annotation(caption_json, caption_per_image)
 
 
 class ImageCaptionDataset(dataset.Dataset):
@@ -63,34 +64,68 @@ class ImageCaptionDataset(dataset.Dataset):
     def __len__(self):
         return len(self.annotations.keys())
 
+    @classmethod
+    def collate_fn(cls, data):
+        """Creates mini-batch tensors from the list of tuples (image, caption).
 
-def collate_fn(data):
-    """Creates mini-batch tensors from the list of tuples (image, caption).
+        We should build custom collate_fn rather than using default collate_fn,
+        because merging caption (including padding) is not supported in default.
 
-    We should build custom collate_fn rather than using default collate_fn,
-    because merging caption (including padding) is not supported in default.
+        Args:
+            data: list of tuple (image, caption).
+                - image: torch tensor of shape (3, 256, 256).
+                - caption: torch tensor of shape (?); variable length.
 
-    Args:
-        data: list of tuple (image, caption).
-            - image: torch tensor of shape (3, 256, 256).
-            - caption: torch tensor of shape (?); variable length.
+        Returns:
+            images: torch tensor of shape (batch_size, 3, 256, 256).
+            targets: torch tensor of shape (batch_size, padded_length).
+            lengths: list; valid length for each padded caption.
+        """
+        # Sort a data list by caption length (descending order).
+        data.sort(key=lambda x: len(x[1]), reverse=True)
+        images, captions = zip(*data)
 
-    Returns:
-        images: torch tensor of shape (batch_size, 3, 256, 256).
-        targets: torch tensor of shape (batch_size, padded_length).
-        lengths: list; valid length for each padded caption.
-    """
-    # Sort a data list by caption length (descending order).
-    data.sort(key=lambda x: len(x[1]), reverse=True)
-    images, captions = zip(*data)
+        # Merge images (from tuple of 3D tensor to 4D tensor).
+        images = torch.stack(images, 0)
 
-    # Merge images (from tuple of 3D tensor to 4D tensor).
-    images = torch.stack(images, 0)
+        # Merge captions (from tuple of 1D tensor to 2D tensor).
+        lengths = [len(cap) for cap in captions]
+        targets = torch.zeros(len(captions), max(lengths)).long()
+        for i, cap in enumerate(captions):
+            end = lengths[i]
+            targets[i, :end] = cap[:end]
+        feed_dict = {
+            "image": images,
+            "targets": targets,
+            "lengths": lengths
+        }
+        return feed_dict
 
-    # Merge captions (from tuple of 1D tensor to 2D tensor).
-    lengths = [len(cap) for cap in captions]
-    targets = torch.zeros(len(captions), max(lengths)).long()
-    for i, cap in enumerate(captions):
-        end = lengths[i]
-        targets[i, :end] = cap[:end]
-    return images, targets, lengths
+def get_image_caption_data(config):
+    transform = get_image_transform()
+    train_dataset = ImageCaptionDataset(img_root=config.data.image_root_path,
+                                        caption_json=config.data.train_caption_path,
+                                        vocab_json=config.data.vocab_path, transform=transform)
+
+    if config.data.valid_caption_path is not None:
+        valid_dataset = ImageCaptionDataset(img_root=config.data.image_root_path,
+                                            caption_json=config.data.valid_caption_path,
+                                            vocab_json=config.data.vocab_path, transform=transform)
+
+    else:
+        train_size = int((1 - config.train.valid_percent) * len(train_dataset))
+        val_size = len(train_dataset) - train_size
+        train_dataset, valid_dataset = random_split(train_dataset, [train_size, val_size])
+    train_loader = dataloader.DataLoader(dataset=train_dataset, batch_size=config.train.batch_size, num_workers=config.train.num_workers,
+                                         shuffle=config.train.shuffle, collate_fn=ImageCaptionDataset.collate_fn)
+    valid_loader = dataloader.DataLoader(dataset=valid_dataset, batch_size=config.train.batch_size, num_workers=config.train.num_workers,
+                                         shuffle=config.train.shuffle, collate_fn=ImageCaptionDataset.collate_fn)
+    return train_dataset, train_loader, valid_dataset, valid_loader
+
+
+if __name__ == '__main__':
+    img_root = '/home/ubuntu/likun/image_data/flickr8k-images'
+    caption_path = '/home/ubuntu/likun/image_data/caption/dataset_flickr8k.json'
+    vocab_path = '/home/ubuntu/likun/image_data/vocab/flickr8k_vocab.json'
+    trans = get_image_transform()
+    ImageCaptionDataset(img_root=img_root, caption_json=caption_path, vocab_json=vocab_path, transform=trans)

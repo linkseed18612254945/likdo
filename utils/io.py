@@ -8,4 +8,6 @@ def dump_json(file_path, value, method='w'):
             f.write('\n')
 
 def load_json(file_path):
-    return json.load(file_path)
+    with open(file_path, 'r') as f:
+        json_file = json.load(f)
+    return json_file

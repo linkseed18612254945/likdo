@@ -112,7 +112,7 @@ def get_logger(name=None, formatter=JacLogFormatter):
     logger.propagate = False
     logger.setLevel(_default_level)
     handler = logging.StreamHandler()
-    handler.setFormatter(formatter(datefmt='%d %H:%M:%S'))
+    handler.setFormatter(formatter(datefmt='%Y-%m-%d %H:%M:%S'))
     handler.setLevel(0)
     del logger.handlers[:]
     logger.addHandler(handler)

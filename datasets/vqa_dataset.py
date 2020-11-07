@@ -23,6 +23,8 @@ class ClevrDataset(Dataset):
         question_json = io.load_json(json_file)
         answers = []
         for question in question_json['questions']:
+            if len(question['answer'].split()) > 1:
+                raise Exception('Answer is not a single word')
             answers.append(question['answer'])
         return answers
 
@@ -54,7 +56,7 @@ class ClevrDataset(Dataset):
         self.annotations = ClevrDataset.build_annotation(self.question_json, data_nums, question_per_image)
 
     def __getitem__(self, index):
-        img_name = self.annotations[index]['filename']
+        img_name = self.annotations[index]['image_filename']
         image = Image.open(os.path.join(self.image_root_path, img_name)).convert('RGB')
         if image.size[0] < 225 or image.size[1] < 255:
             image = image.resize((256, 256), Image.ANTIALIAS)
@@ -63,7 +65,7 @@ class ClevrDataset(Dataset):
         question = self.annotations[index].get('question')
         question = self.question_vocab.map_sequence(question)
         answer = self.annotations[index].get('answer')
-        answer = self.question_vocab.map_sequence(answer, add_bos=False, add_eos=False)
+        answer = self.answer_vocab.map_sequence(answer, add_bos=False, add_eos=False)
         return image, question, answer
 
     def __len__(self):
@@ -89,7 +91,7 @@ class ClevrDataset(Dataset):
         # Sort a data list by caption length (descending order).
         data.sort(key=lambda x: len(x[1]), reverse=True)
         images, questions, answers = zip(*data)
-
+        answers = torch.LongTensor([a[0] for a in answers])
         # Merge images (from tuple of 3D tensor to 4D tensor).
         images = torch.stack(images, 0)
 

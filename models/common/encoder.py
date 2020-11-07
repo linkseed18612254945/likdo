@@ -31,10 +31,8 @@ class TextRNNEncoder(nn.Module):
                            num_layers, batch_first=True, bidirectional=is_bi)
         self.dropout = nn.Dropout(p=dropout)
 
-    def forward(self, seqs, lengths):
-        feature = self.embedding(seqs)
-        feature = self.dropout(feature)
-        packed = pack_padded_sequence(feature, lengths, batch_first=True)
-        outputs, hidden = self.rnn(packed)
-        outputs, (h, _) = pad_packed_sequence(outputs, batch_first=True)
+    def forward(self, seqs):
+        seqs_embedding = self.embedding(seqs)
+        seqs_embedding = self.dropout(seqs_embedding)
+        outputs, (h, c) = self.rnn(seqs_embedding)
         return outputs, h

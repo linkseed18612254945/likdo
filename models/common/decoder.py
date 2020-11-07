@@ -8,15 +8,16 @@ class TextRNNDecoder(nn.Module):
     def __init__(self, vocab_size, embedding_dim, hidden_size, num_layers, is_bi=False, dropout=0.1):
         super(TextRNNDecoder, self).__init__()
         self.embedding = nn.Embedding(vocab_size, embedding_dim)
-        self.lstm = nn.LSTM(embedding_dim, hidden_size,
+        self.rnn = nn.LSTM(embedding_dim, hidden_size,
                             num_layers, batch_first=True, bidirectional=is_bi)
         self.dropout = nn.Dropout(p=dropout)
 
     def forward(self, encoder_feature, seqs, lengths):
         seqs_embedding = self.embedding(seqs)
         # seqs_embedding = self.dropout(seqs_embedding)
-        feature = torch.cat((encoder_feature.unsqueeze(1), seqs_embedding), dim=1)  # (batch_size, img_feature + embedding)
-        packed = pack_padded_sequence(feature, lengths, batch_first=True)
+        if encoder_feature is not None:
+            seqs_embedding = torch.cat((encoder_feature.unsqueeze(1), seqs_embedding), dim=1)  # (batch_size, img_feature + embedding)
+        packed = pack_padded_sequence(seqs_embedding, lengths, batch_first=True)
         output, (h, c) = self.lstm(packed)
         outputs, lengths = pad_packed_sequence(output, batch_first=True)
         return output.data, outputs, h
@@ -26,7 +27,7 @@ class TextRNNDecoder(nn.Module):
         hidden = None
         sampled_ids = []
         for i in range(max_length):
-            output, hidden = self.lstm(inputs, hidden)
+            output, hidden = self.rnn(inputs, hidden)
             output = self.fc(output.squeeze(1))
             _, predicted = output.max(1)
             sampled_ids.append(predicted)

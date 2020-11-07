@@ -37,11 +37,13 @@ class FlickrDataset(dataset.Dataset):
                 tokens = sentence.get('tokens') or nltk.tokenize.word_tokenize(str(sentence['raw']).lower())
                 annotations[img_index] = {'filename': img_info['filename'], 'raw': sentence['raw'],
                                           'tokens': tokens}
+                if img_index >= data_nums:
+                    break
                 img_index += 1
         return annotations
 
     def __init__(self, img_root, caption_json, vocab_json,
-                 transform=transforms.ToTensor(), caption_per_image=None):
+                 transform=transforms.ToTensor(), data_nums='all', caption_per_image=None):
         super(FlickrDataset, self).__init__()
 
         # initialize args
@@ -54,7 +56,7 @@ class FlickrDataset(dataset.Dataset):
         self.vocab = Vocab.from_json(vocab_json)
         self.transform = transform
 
-        self.annotations = FlickrDataset.build_annotation(self.caption_json, caption_per_image)
+        self.annotations = FlickrDataset.build_annotation(self.caption_json, data_nums, caption_per_image)
 
     def __getitem__(self, index):
         # Image load and transform
@@ -117,11 +119,13 @@ def get_image_caption_data(config):
     if 'flickr' in config.data.name:
         train_dataset = FlickrDataset(img_root=config.data.image_root_path,
                                       caption_json=config.data.train_caption_path,
-                                      vocab_json=config.data.vocab_path, transform=transform)
+                                      vocab_json=config.data.vocab_path, transform=transform,
+                                      data_nums=config.data.train_data_nums)
         if config.data.valid_caption_path is not None:
             valid_dataset = FlickrDataset(img_root=config.data.image_root_path,
                                           caption_json=config.data.valid_caption_path,
-                                          vocab_json=config.data.vocab_path, transform=transform)
+                                          vocab_json=config.data.vocab_path, transform=transform,
+                                          data_nums=config.data.valid_data_num)
         else:
             train_size = int((1 - config.train.valid_percent) * len(train_dataset))
             val_size = len(train_dataset) - train_size

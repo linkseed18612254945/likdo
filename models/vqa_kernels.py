@@ -13,10 +13,10 @@ class OnlyText(nn.Module):
 
     def forward(self, feed_dict):
         monitors = {}
-        question_feature = self.encoder.forward(feed_dict['questions'], feed_dict['question_lengths'])
-        scores = self.fc(question_feature)
+        outputs, last_hidden = self.encoder.forward(feed_dict['questions'])
+        scores = self.fc(last_hidden.squeeze())
         loss = self.loss_function(scores, feed_dict['answers'])
         output_dict = {
-            'question_feature': question_feature
+            'question_feature': outputs
         }
         return loss, output_dict, monitors

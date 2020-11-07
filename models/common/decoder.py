@@ -18,7 +18,7 @@ class TextRNNDecoder(nn.Module):
         if encoder_feature is not None:
             seqs_embedding = torch.cat((encoder_feature.unsqueeze(1), seqs_embedding), dim=1)  # (batch_size, img_feature + embedding)
         packed = pack_padded_sequence(seqs_embedding, lengths, batch_first=True)
-        output, (h, c) = self.lstm(packed)
+        output, (h, c) = self.rnn(packed)
         outputs, lengths = pad_packed_sequence(output, batch_first=True)
         return output.data, outputs, h
 

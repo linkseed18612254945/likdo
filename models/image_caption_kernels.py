@@ -41,14 +41,28 @@ class IMAGINET(nn.Module):
                                                       hidden_size=config.model.text_rnn_hidden_size,
                                                       num_layers=config.model.text_rnn_num_layers,
                                                       is_bi=config.model.text_rnn_is_bi)
-        self.alpha = config.model.IMAGINET.alpha
-        self.image_caption_similar_loss = nn.MSELoss()
+        self.alpha = config.model.IMAGINET_alpha
+        self.fc = nn.Linear(config.model.text_rnn_hidden_size * 2 if config.model.text_rnn_is_bi
+                            else config.model.text_rnn_hidden_size,
+                            config.data.caption_vocab_size)
         self.caption_predict_loss = nn.CrossEntropyLoss()
+        self.image_caption_similar_loss = nn.MSELoss()
 
     def forward(self, feed_dict):
+        monitors = {}
         image_feature = self.image_encoder.forward(feed_dict['images'])
-        caption_predict_output, outputs, last_hidden = self.caption_decoder.forward(encoder_feature=None,
-                                                                                    seqs=feed_dict['captions'],
-                                                                                    lengths=feed_dict['lengths'])
+        _, outputs, last_hidden = self.caption_decoder.forward(encoder_feature=None,
+                                                               seqs=feed_dict['captions'],
+                                                               lengths=feed_dict['lengths'])
         last_hidden = last_hidden.squeeze()
-        loss_1 = self.image_caption_similar_loss(last_hidden, image_feature)
+        predict_use_length = [lenth - 1 for lenth in feed_dict['lengths']]
+        pack_outputs = nn.utils.rnn.pack_padded_sequence(outputs, predict_use_length, batch_first=True)[0]
+        pack_outputs = self.fc(pack_outputs)
+        targets = nn.utils.rnn.pack_padded_sequence(feed_dict['captions'][:, 1:], predict_use_length, batch_first=True)[0]
+        loss_1 = self.caption_predict_loss(pack_outputs, targets)
+        loss_2 = self.image_caption_similar_loss(last_hidden, image_feature)
+        loss = loss_1 * self.alpha + loss_2 + (1 - self.alpha)
+        output_dict = {
+            "caption_outputs": outputs
+        }
+        return loss, output_dict, monitors

@@ -21,7 +21,8 @@ def image_caption_main():
     config.data.caption_vocab_size = len(train_dataset.vocab)
 
     logger.critical("Init model and train environment")
-    model = image_caption_kernels.BasicImageCaption(config).to(device)
+    # model = image_caption_kernels.BasicImageCaption(config).to(device)
+    model = image_caption_kernels.IMAGINET(config).to(device)
     optimizer = optim.Adam(params=model.parameters(), lr=config.train.lr)
     trainer = env.TrainEnv(model, optimizer, config, device)
 
@@ -56,6 +57,6 @@ def vqa_main():
         trainer.save_checkpoint(config.train.save_model_path)
 
 if __name__ == '__main__':
-    vqa_main()
+    image_caption_main()
 
 

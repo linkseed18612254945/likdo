@@ -9,21 +9,21 @@ def build_image_caption_config():
     config.data.valid_caption_path = None
     config.data.vocab_path = '/home/ubuntu/likun/image_data/vocab/flickr8k_vocab.json'
     config.data.image_root_path = '/home/ubuntu/likun/image_data/flickr8k-images'
-    config.data.train_data_nums = 1000
-    config.data.valid_data_nums = 1000
+    config.data.train_data_nums = "all"
+    config.data.valid_data_nums = "all"
 
     config.data.caption_vocab_size = None
 
     # Model config setting
     config.model.image_embedding_dim = 224
     config.model.text_embedding_dim = 224
-    config.model.text_rnn_hidden_size = 256
+    config.model.text_rnn_hidden_size = 224
     config.model.text_rnn_num_layers = 1
     config.model.text_rnn_is_bi = False
     config.model.rnn_dropout_rate = 0.5
 
     # IMAGINET model config
-    config.model.IMAGINET.alpha = 0.5
+    config.model.IMAGINET_alpha = 0.5
 
     # Train config setting
     config.train.use_gpu = True

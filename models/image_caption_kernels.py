@@ -5,8 +5,12 @@ from models.common import encoder, decoder
 class BasicImageCaption(nn.Module):
     def __init__(self, config):
         super(BasicImageCaption, self).__init__()
-        self.encoder = encoder.ImageCNNEncoder(config)
-        self.decoder = decoder.TextRNNDecoder(config)
+        self.encoder = encoder.ImageCNNEncoder(image_embedding_dim=config.model.image_embedding_dim)
+        self.decoder = decoder.TextRNNDecoder(vocab_size=config.data.vocab_size,
+                                              embedding_dim=config.model.text_embedding_dim,
+                                              hidden_size=config.model.text_rnn_hidden_size,
+                                              num_layers=config.model.text_rnn_num_layers,
+                                              is_bi=config.model.text_rnn_is_bi)
         self.loss = nn.CrossEntropyLoss()
 
     def forward(self, feed_dict):

@@ -4,14 +4,15 @@ def build_image_caption_config():
     config = BasicConfig()
 
     # Data config setting
+    config.data.name = 'flickr8k'
     config.data.train_caption_path = '/home/ubuntu/likun/image_data/caption/dataset_flickr8k.json'
     config.data.valid_caption_path = None
     config.data.vocab_path = '/home/ubuntu/likun/image_data/vocab/flickr8k_vocab.json'
     config.data.image_root_path = '/home/ubuntu/likun/image_data/flickr8k-images'
 
     # Model config setting
-    config.model.image_embedding_dim = 1
-    config.model.text_embedding_dim = 1
+    config.model.image_embedding_dim = 224
+    config.model.text_embedding_dim = 224
     config.model.text_rnn_hidden_size = 256
     config.model.text_rnn_num_layers = 1
     config.model.text_rnn_is_bi = False

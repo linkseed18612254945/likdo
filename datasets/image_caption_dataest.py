@@ -8,42 +8,40 @@ import random
 from PIL import Image
 from datasets.common.transforms import get_image_transform
 from torch.utils.data import dataloader, random_split
+import nltk
 from utils.logger import get_logger
 
-import nltk
 
 logger = get_logger(__file__)
 
-def get_captions_from_flickr_json(path):
-    dataset = io.load_json(path)['images']
-    captions = []
-    for i, d in enumerate(dataset):
-        captions += [str(x['raw']) for x in d['sentences']]
-    return captions
+class FlickrDataset(dataset.Dataset):
+    @classmethod
+    def get_captions_from_json(cls, path):
+        dataset = io.load_json(path)['images']
+        captions = []
+        for i, d in enumerate(dataset):
+            captions += [str(x['raw']) for x in d['sentences']]
+        return captions
 
-def flickr_annotation(caption_json, caption_per_image):
-    annotations = dict()
-    img_index = 0
-    for img_info in caption_json['images']:
-        if caption_per_image is not None:
-            use_sentences = random.choices(img_info['sentences'], k=caption_per_image)
-        else:
-            use_sentences = img_info['sentences']
-        for sentence in use_sentences:
-            tokens = sentence.get('tokens') or nltk.tokenize.word_tokenize(str(sentence['raw']).lower())
-            annotations[img_index] = {'filename': img_info['filename'], 'raw': sentence['raw'],
-                                      'tokens': tokens}
-            img_index += 1
-    return annotations
+    @classmethod
+    def build_annotation(cls, caption_json, caption_per_image):
+        annotations = dict()
+        img_index = 0
+        for img_info in caption_json['images']:
+            if caption_per_image is not None:
+                use_sentences = random.choices(img_info['sentences'], k=caption_per_image)
+            else:
+                use_sentences = img_info['sentences']
+            for sentence in use_sentences:
+                tokens = sentence.get('tokens') or nltk.tokenize.word_tokenize(str(sentence['raw']).lower())
+                annotations[img_index] = {'filename': img_info['filename'], 'raw': sentence['raw'],
+                                          'tokens': tokens}
+                img_index += 1
+        return annotations
 
-def coco_annotation(caption_json, caption_per_image):
-    return flickr_annotation(caption_json, caption_per_image)
-
-
-class ImageCaptionDataset(dataset.Dataset):
-    def __init__(self, img_root, caption_json, vocab_json, annotation_func=flickr_annotation,
+    def __init__(self, img_root, caption_json, vocab_json,
                  transform=transforms.ToTensor(), caption_per_image=None):
-        super(ImageCaptionDataset, self).__init__()
+        super(FlickrDataset, self).__init__()
 
         # initialize args
         self.img_root = img_root
@@ -55,7 +53,7 @@ class ImageCaptionDataset(dataset.Dataset):
         self.vocab = Vocab.from_json(vocab_json)
         self.transform = transform
 
-        self.annotations = annotation_func(self.caption_json, caption_per_image)
+        self.annotations = FlickrDataset.build_annotation(self.caption_json, caption_per_image)
 
     def __getitem__(self, index):
         # Image load and transform
@@ -113,28 +111,29 @@ class ImageCaptionDataset(dataset.Dataset):
         }
         return feed_dict
 
-
 def get_image_caption_data(config):
     transform = get_image_transform()
-    train_dataset = ImageCaptionDataset(img_root=config.data.image_root_path,
-                                        caption_json=config.data.train_caption_path,
-                                        vocab_json=config.data.vocab_path, transform=transform)
-
-    if config.data.valid_caption_path is not None:
-        valid_dataset = ImageCaptionDataset(img_root=config.data.image_root_path,
-                                            caption_json=config.data.valid_caption_path,
-                                            vocab_json=config.data.vocab_path, transform=transform)
-
+    if 'flickr' in config.data.name:
+        train_dataset = FlickrDataset(img_root=config.data.image_root_path,
+                                      caption_json=config.data.train_caption_path,
+                                      vocab_json=config.data.vocab_path, transform=transform)
+        if config.data.valid_caption_path is not None:
+            valid_dataset = FlickrDataset(img_root=config.data.image_root_path,
+                                          caption_json=config.data.valid_caption_path,
+                                          vocab_json=config.data.vocab_path, transform=transform)
+        else:
+            train_size = int((1 - config.train.valid_percent) * len(train_dataset))
+            val_size = len(train_dataset) - train_size
+            train_dataset, valid_dataset = random_split(train_dataset, [train_size, val_size])
+            train_dataset = train_dataset.dataset
+            valid_dataset = valid_dataset.dataset
     else:
-        train_size = int((1 - config.train.valid_percent) * len(train_dataset))
-        val_size = len(train_dataset) - train_size
-        train_dataset, valid_dataset = random_split(train_dataset, [train_size, val_size])
+        raise Exception(f'Not support data {config.data.name}')
     train_loader = dataloader.DataLoader(dataset=train_dataset, batch_size=config.train.batch_size, num_workers=config.train.num_workers,
-                                         shuffle=config.train.shuffle, collate_fn=ImageCaptionDataset.collate_fn)
+                                         shuffle=config.train.shuffle, collate_fn=train_dataset.collate_fn)
     valid_loader = dataloader.DataLoader(dataset=valid_dataset, batch_size=config.train.batch_size, num_workers=config.train.num_workers,
-                                         shuffle=config.train.shuffle, collate_fn=ImageCaptionDataset.collate_fn)
+                                         shuffle=config.train.shuffle, collate_fn=valid_dataset.collate_fn)
     return train_dataset, train_loader, valid_dataset, valid_loader
-
 
 
 if __name__ == '__main__':
@@ -143,7 +142,7 @@ if __name__ == '__main__':
     vocab_path = '/home/ubuntu/likun/image_data/vocab/flickr8k_vocab.json'
 
     # build vocab
-    build_vocab(file_paths=(caption_path,), compile_functions=(get_captions_from_flickr_json,), vocab_path=vocab_path)
+    build_vocab(file_paths=(caption_path,), compile_functions=(FlickrDataset.get_captions_from_json,), vocab_path=vocab_path)
 
     # build dataset
     # trans = get_image_transform()

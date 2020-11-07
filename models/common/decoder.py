@@ -5,21 +5,21 @@ from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 __all__ = ['TextRNNDecoder']
 
 class TextRNNDecoder(nn.Module):
-    def __init__(self, config):
+    def __init__(self, vocab_size, embedding_dim, hidden_size, num_layers, is_bi=False, dropout=0.1):
         super(TextRNNDecoder, self).__init__()
-        self.embedding = nn.Embedding(config.data.vocab_size, config.model.text_embedding_dim)
-        self.lstm = nn.LSTM(config.model.text_embedding_dim, config.model.text_rnn_hidden_size,
-                            config.model.text_rnn_num_layers, batch_first=True)
-        self.fc = nn.Linear(config.model.text_rnn_hidden_size, config.data.vocab_size)
+        self.embedding = nn.Embedding(vocab_size, embedding_dim)
+        self.lstm = nn.LSTM(embedding_dim, hidden_size,
+                            num_layers, batch_first=True, bidirectional=is_bi)
+        self.dropout = nn.Dropout(p=dropout)
 
     def forward(self, encoder_feature, seqs, lengths):
         seqs_embedding = self.embedding(seqs)
+        # seqs_embedding = self.dropout(seqs_embedding)
         feature = torch.cat((encoder_feature.unsqueeze(1), seqs_embedding), dim=1)  # (batch_size, img_feature + embedding)
         packed = pack_padded_sequence(feature, lengths, batch_first=True)
         output, (h, c) = self.lstm(packed)
         outputs, lengths = pad_packed_sequence(output, batch_first=True)
-        scores = self.fc(output.data)
-        return scores, outputs, h
+        return output.data, outputs, h
 
     def sample(self, img_feature, max_length, eos_index=None):
         inputs = img_feature.unsqueeze(1)

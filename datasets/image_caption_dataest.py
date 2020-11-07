@@ -24,8 +24,9 @@ class FlickrDataset(dataset.Dataset):
         return captions
 
     @classmethod
-    def build_annotation(cls, caption_json, caption_per_image):
+    def build_annotation(cls, caption_json, data_nums, caption_per_image):
         annotations = dict()
+        data_nums = len(caption_json['questions']) if data_nums == 'all' else data_nums
         img_index = 0
         for img_info in caption_json['images']:
             if caption_per_image is not None:

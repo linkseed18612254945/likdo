@@ -16,7 +16,7 @@ import numpy as np
 class G(dict):
     def __getattr__(self, k):
         if k not in self:
-            raise AttributeError
+            raise AttributeError("Not contain attr {}".format(k))
         return self[k]
 
     def __setattr__(self, k, v):

@@ -2,13 +2,24 @@ import torch
 from torchvision import transforms
 from torch.utils.data import dataset
 from utils import io
-from datasets.vocab import Vocab
+from datasets.common.vocab import Vocab, build_vocab
 import os
 import random
-import nltk
 from PIL import Image
-from datasets.transforms import get_image_transform
+from datasets.common.transforms import get_image_transform
 from torch.utils.data import dataloader, random_split
+from utils.logger import get_logger
+
+import nltk
+
+logger = get_logger(__file__)
+
+def get_captions_from_flickr_json(path):
+    dataset = io.load_json(path)['images']
+    captions = []
+    for i, d in enumerate(dataset):
+        captions += [str(x['raw']) for x in d['sentences']]
+    return captions
 
 def flickr_annotation(caption_json, caption_per_image):
     annotations = dict()
@@ -41,12 +52,12 @@ class ImageCaptionDataset(dataset.Dataset):
         else:
             self.caption_json = caption_json
         self.dataset_name = self.caption_json['dataset']
-        self.annotations = annotation_func(self.caption_json, caption_per_image)
         self.vocab = Vocab.from_json(vocab_json)
         self.transform = transform
 
-    def __getitem__(self, index):
+        self.annotations = annotation_func(self.caption_json, caption_per_image)
 
+    def __getitem__(self, index):
         # Image load and transform
         img_name = self.annotations[index]['filename']
         image = Image.open(os.path.join(self.img_root, img_name)).convert('RGB')
@@ -92,14 +103,16 @@ class ImageCaptionDataset(dataset.Dataset):
         lengths = [len(cap) for cap in captions]
         targets = torch.zeros(len(captions), max(lengths)).long()
         for i, cap in enumerate(captions):
+            cap = torch.LongTensor(cap)
             end = lengths[i]
             targets[i, :end] = cap[:end]
         feed_dict = {
-            "image": images,
-            "targets": targets,
+            "images": images,
+            "captions": targets,
             "lengths": lengths
         }
         return feed_dict
+
 
 def get_image_caption_data(config):
     transform = get_image_transform()
@@ -123,9 +136,15 @@ def get_image_caption_data(config):
     return train_dataset, train_loader, valid_dataset, valid_loader
 
 
+
 if __name__ == '__main__':
     img_root = '/home/ubuntu/likun/image_data/flickr8k-images'
     caption_path = '/home/ubuntu/likun/image_data/caption/dataset_flickr8k.json'
     vocab_path = '/home/ubuntu/likun/image_data/vocab/flickr8k_vocab.json'
-    trans = get_image_transform()
-    ImageCaptionDataset(img_root=img_root, caption_json=caption_path, vocab_json=vocab_path, transform=trans)
+
+    # build vocab
+    build_vocab(file_paths=(caption_path,), compile_functions=(get_captions_from_flickr_json,), vocab_path=vocab_path)
+
+    # build dataset
+    # trans = get_image_transform()
+    # ImageCaptionDataset(img_root=img_root, caption_json=caption_path, vocab_json=vocab_path, transform=trans)

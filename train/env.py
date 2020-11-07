@@ -8,10 +8,11 @@ import tqdm
 logger = get_logger(__file__)
 
 class TrainEnv(object):
-    def __init__(self, model, optimizer, config):
-        self._model = model
+    def __init__(self, model, optimizer, config, device):
+        self._model = model.to(device)
         self._optimizer = optimizer
         self._config = config
+        self._device = device
 
         self._train_event_manager = SimpleEventRegistry({
             'epoch:before', 'epoch:after',
@@ -19,6 +20,7 @@ class TrainEnv(object):
             'forward:before', 'forward:after',
             'backward:before', 'backward:after',
         })
+
 
     @property
     def model(self):
@@ -119,7 +121,14 @@ class TrainEnv(object):
 
     def train_epoch(self, train_loader, epoch, meters):
         self._model.train()
-        for batch in tqdm.tqdm(train_loader, desc=f'Epoch {epoch}, Training'):
-            optimizer.zero_grad()
-            img = batch[0].to(device)
-            caption = batch[1].to(device)
+        pbar = tqdm.tqdm(train_loader)
+        for feed_dict in pbar:
+            self.optimizer.zero_grad()
+            feed_dict = {k: v.to(self._device) if 'to' in v.__dir__() else v for k, v in feed_dict.items()}
+            loss, output_dict, monitors, extra = self.step(feed_dict)
+            self.optimizer.step()
+            n = list(feed_dict.values())[0].size(0)
+            meters.update(loss=loss, n=n)
+            meters.update(monitors, n=n)
+            meters.update(extra)
+            pbar.set_description(desc=f'Training {meters.epoch_common_format(epoch)}', refresh=True)

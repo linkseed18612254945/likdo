@@ -16,10 +16,10 @@ class TextRNNDecoder(nn.Module):
         seqs_embedding = self.embedding(seqs)
         feature = torch.cat((encoder_feature.unsqueeze(1), seqs_embedding), dim=1)  # (batch_size, img_feature + embedding)
         packed = pack_padded_sequence(feature, lengths, batch_first=True)
-        outputs, hiddens = self.lstm(packed)
-        outputs, (h, _) = pad_packed_sequence(outputs, batch_first=True)
-        outputs = self.fc(outputs.data)
-        return outputs, h
+        output, (h, c) = self.lstm(packed)
+        outputs, lengths = pad_packed_sequence(output, batch_first=True)
+        scores = self.fc(output.data)
+        return scores, outputs, h
 
     def sample(self, img_feature, max_length, eos_index=None):
         inputs = img_feature.unsqueeze(1)

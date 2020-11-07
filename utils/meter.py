@@ -93,6 +93,14 @@ class GroupMeters(object):
         else:
             return self.format(caption, values, '\t{} = {:4f}', '\n')
 
+    def epoch_common_format(self, epoch):
+        return self.format_simple(
+            'Epoch {}'.format(epoch),
+            {k: v for k, v in self.val.items() if
+             not k.startswith('validation') and k != 'epoch' and k.count('/') <= 1},
+            compressed=True
+        )
+
     def dump(self, filename, values='avg'):
         meters_kv = self._canonize_values(values)
         io.dump_json(filename, meters_kv, method='a')

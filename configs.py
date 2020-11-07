@@ -18,11 +18,15 @@ def build_image_caption_config():
     config.model.rnn_dropout_rate = 0.5
 
     # Train config setting
+    config.train.use_gpu = True
+    config.train.gpu_index = 0
+
     config.train.shuffle = True
     config.train.num_workers = 0
     config.train.valid_percent = 0.1
     config.train.lr = 0.001
-    config.train.batch_size = 32
-    config.train.epoch_size = 3
+    config.train.batch_size = 128
+    config.train.epoch_size = 2
+    config.train.save_model_path = '/home/ubuntu/likun/image_save_kernels/image_caption_f8k_1106.pt'
 
     return config

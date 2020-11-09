@@ -1,10 +1,10 @@
 import torch
 from torch import nn
 from torch import optim
-from my_image_caption.model import ImageCaptionModule
+from old_code.model import ImageCaptionModule
 from torchvision import transforms
 from torch.utils.data import dataloader
-from my_image_caption.image_caption_dataset import ImageCaptionDataset, collate_fn
+from old_code.image_caption_dataset import ImageCaptionDataset, collate_fn
 import tqdm
 import numpy as np
 

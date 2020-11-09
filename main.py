@@ -1,4 +1,4 @@
-from train import env
+from utils import env
 from configs import *
 from models import image_caption_kernels, vqa_kernels
 from torch import optim

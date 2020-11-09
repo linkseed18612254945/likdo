@@ -1,6 +1,6 @@
 import torch
 from torch import nn
-from my_image_caption.model import ImageCNNEncoder, TextRNNEncoder
+from old_code.model import ImageCNNEncoder, TextRNNEncoder
 
 class BasicAlignModel(nn.Module):
     def __init__(self, image_encoding_size, vocab_size, embedding_size, hidden_size, num_layers):

@@ -1,4 +1,39 @@
 from utils.container import BasicConfig
+import utils
+
+def build_vqa_config():
+    config = BasicConfig()
+
+    # Data config setting
+    config.data.name = 'cifar10'
+    config.data.train_path = '/home/ubuntu/likun/image_data/CLEVR_v1.0/questions/CLEVR_train_questions.json'
+    config.data.valid_path = None
+    config.data.train_data_nums = 'all'
+    config.data.valid_data_nums = 'all'
+
+    config.data.classes_nums = None
+
+    # Model config setting
+    config.model.image_embedding_dim = 224
+    config.model.question_embedding_dim = 224
+    config.model.question_rnn_hidden_size = 256
+    config.model.question_rnn_num_layers = 1
+    config.model.question_rnn_is_bi = False
+    config.model.rnn_dropout_rate = 0.5
+
+    # Train config setting
+    config.train.use_gpu = True
+    config.train.gpu_index = 0
+    config.train.shuffle = True
+    config.train.num_workers = 0
+    config.train.valid_percent = 0.1
+    config.train.lr = 0.001
+    config.train.batch_size = 128
+    config.train.epoch_size = 2
+    config.train.save_model_path = f'/home/ubuntu/likun/image_save_kernels/{config.data.name}_{1}.pt'
+
+    return config
+
 
 def build_image_caption_config():
     config = BasicConfig()
@@ -34,11 +69,12 @@ def build_image_caption_config():
     config.train.lr = 0.001
     config.train.batch_size = 128
     config.train.epoch_size = 2
-    config.train.save_model_path = '/home/ubuntu/likun/image_save_kernels/image_caption_f8k_1106.pt'
+    config.train.save_model_path = f'/home/ubuntu/likun/image_save_kernels/{config.data.name}_1106.pt'
 
     return config
 
-def build_vqa_config():
+
+def build_image_classify_config():
     config = BasicConfig()
 
     # Data config setting
@@ -72,6 +108,6 @@ def build_vqa_config():
     config.train.lr = 0.001
     config.train.batch_size = 128
     config.train.epoch_size = 2
-    config.train.save_model_path = '/home/ubuntu/likun/image_save_kernels/vqa_clevr_1106.pt'
+    config.train.save_model_path = f'/home/ubuntu/likun/image_save_kernels/{config.data.name}_1106.pt'
 
     return config

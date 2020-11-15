@@ -1,5 +1,5 @@
 import json
-
+import pandas as pd
 
 def dump_json(file_path, value, method='w'):
     with open(file_path, method) as f:
@@ -11,3 +11,15 @@ def load_json(file_path):
     with open(file_path, 'r') as f:
         json_file = json.load(f)
     return json_file
+
+def load_csv(csv_path, without_header):
+    if without_header:
+        df = pd.read_csv(csv_path, header=None, encoding='utf-8')
+    else:
+        df = pd.read_csv(csv_path, encoding='utf-8')
+    return df
+
+def load_txt(txt_path):
+    with open(txt_path, 'r', encoding='utf-8') as f:
+        lines = f.read().splitlines()
+    return lines

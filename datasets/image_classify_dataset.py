@@ -6,13 +6,19 @@ from torchvision import transforms
 
 
 class Cifar10(dataset.Dataset):
-    def __init__(self, file_root, transform=transforms.ToTensor()):
+    def __init__(self, file_root, transform=transforms.ToTensor(), target_transform=None):
         super(Cifar10, self).__init__()
         self.root_path = file_root
         self._dataset = torchvision.datasets.CIFAR10(root=file_root, transform=transform)
+        self.transform = transform
+        self.target_transform = target_transform
 
     def __getitem__(self, item):
         img, target = self._dataset.__getitem__(item)
+        if self.transform is not None:
+            img = self.transform(img)
+        if self.target_transform is not None:
+            target = self.transform(self._dataset.classes[target])
         return img, target
 
     def __len__(self):
@@ -53,4 +59,3 @@ def get_classify_data(config):
 
 if __name__ == '__main__':
     root_path = '/home/ubuntu/likun/image_data'
-    get_classify_data()

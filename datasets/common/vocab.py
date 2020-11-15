@@ -95,10 +95,6 @@ class Vocab(object):
                 feed_dict[k] = self.map(feed_dict[k])
         return feed_dict
 
-def get_sentences_from_txt(path):
-    with open(path, 'r', encoding='utf-8') as f:
-        sentences = f.read().splitlines()
-    return sentences
 
 def build_vocab(file_paths, compile_functions, vocab_path=None, threshold=0):
     logger.critical(f"Start build vocab")
@@ -130,3 +126,19 @@ def build_vocab(file_paths, compile_functions, vocab_path=None, threshold=0):
         vocab.dump_json(vocab_path)
     logger.critical(f"Success build vocab, saved in {vocab_path}")
     return vocab
+
+def get_sentences_from_txt(path):
+    with open(path, 'r', encoding='utf-8') as f:
+        sentences = f.read().splitlines()
+    return sentences
+
+def glove_file_compile(glove_file_path):
+    with open(glove_file_path, 'r', encoding='utf-8') as f:
+        words = f.read().splitlines()
+    words = [w.split()[0] for w in words]
+    return words
+
+if __name__ == '__main__':
+    glove_file_path = '/home/ubuntu/likun/nlp_pretrained/glove/glove.6B.50d.txt'
+    vocab_path = '/home/ubuntu/likun/glove_vocab.json'
+    build_vocab((glove_file_path,), (glove_file_compile,), vocab_path=vocab_path)

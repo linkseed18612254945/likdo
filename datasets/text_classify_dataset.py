@@ -14,13 +14,21 @@ from utils.logger import get_logger
 
 logger = get_logger(__file__)
 
-class FlickrDataset(dataset.Dataset):
+class DBpediaCencept(dataset.Dataset):
     @classmethod
-    def get_captions_from_json(cls, path):
-        dataset = io.load_json(path)['images']
-        captions = []
-        for i, d in enumerate(dataset):
-            captions += [str(x['raw']) for x in d['sentences']]
+    def get_description_from_csv(cls, path):
+        df = io.load_csv(path, without_header=True)
+        return df[2].tolist()
+
+    @classmethod
+    def get_item_from_csv(cls, path):
+        df = io.load_csv(path, without_header=True)
+        return df[1].tolist()
+
+    @classmethod
+    def get_class_name_from_csv(cls, path):
+        df = io.load_csv(path, without_header=True)
+        with open
         return captions
 
     @classmethod
@@ -144,12 +152,12 @@ def get_image_caption_data(config):
 
 
 if __name__ == '__main__':
-    img_root = '/home/ubuntu/likun/image_data/flickr8k-images'
-    caption_path = '/home/ubuntu/likun/image_data/caption/dataset_flickr8k.json'
-    vocab_path = '/home/ubuntu/likun/image_data/vocab/flickr8k_vocab.json'
+    dbpedia_data_path = '/home/ubuntu/likun/nlp_data/text_classify/dbpedia_csv/train.csv'
+    classes_path = '/home/ubuntu/likun/nlp_data/text_classify/dbpedia_csv/classes.txt'
+    vocab_path = '/home/ubuntu/likun/image_data/vocab/dbpedia_description.json'
 
     # build vocab
-    build_vocab(file_paths=(caption_path,), compile_functions=(FlickrDataset.get_captions_from_json,), vocab_path=vocab_path)
+    build_vocab(file_paths=(dbpedia_data_path,), compile_functions=(DBpediaCencept.get_description_from_csv,), vocab_path=vocab_path)
 
     # build dataset
     # trans = get_image_transform()

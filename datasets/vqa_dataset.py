@@ -41,7 +41,7 @@ class ClevrDataset(Dataset):
         return annotations
 
     def __init__(self, image_root_path, question_json_path, question_vocab_path, answer_vocab_path,
-                 transform, data_nums='all', question_per_image=None):
+                 transform,  target_transform=None, data_nums='all', question_per_image=None):
         super(ClevrDataset, self).__init__()
         self.image_root_path = image_root_path
         if isinstance(question_json_path, str):
@@ -52,6 +52,7 @@ class ClevrDataset(Dataset):
         self.question_vocab = Vocab.from_json(question_vocab_path)
         self.answer_vocab = Vocab.from_json(answer_vocab_path)
         self.transform = transform
+        self.target_transform = target_transform
 
         self.annotations = ClevrDataset.build_annotation(self.question_json, data_nums, question_per_image)
 

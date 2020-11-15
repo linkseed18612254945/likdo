@@ -11,7 +11,7 @@ import torch
 
 class ClevrDataset(Dataset):
     @classmethod
-    def get_questions_from_json(cls, json_file):
+    def get_questions_from_json(cls, json_file, extra_param):
         question_json = io.load_json(json_file)
         questions = []
         for question in question_json['questions']:
@@ -19,7 +19,7 @@ class ClevrDataset(Dataset):
         return questions
 
     @classmethod
-    def get_answers_from_json(cls, json_file):
+    def get_answers_from_json(cls, json_file, extra_param):
         question_json = io.load_json(json_file)
         answers = []
         for question in question_json['questions']:

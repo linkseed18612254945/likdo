@@ -8,8 +8,8 @@ class GloveVectorTransform(object):
             glove_vectors = f.read().splitlines()
         self.glove_vectors = {l.split()[0]: l.split()[1:] for l in glove_vectors}
 
-    def __call__(self, word):
-        return torch.FloatTensor(list(map(float, self.glove_vectors.get(word))))
+    def __call__(self, sentence):
+        return torch.FloatTensor([list(map(float, self.glove_vectors.get(word))) for word in sentence])
 
     def __repr__(self):
         return self.__class__.__name__ + '()'
@@ -24,8 +24,5 @@ def get_image_transform():
                                          (0.229, 0.224, 0.225))])
     return transform
 
-def get_text_static_transform(static_vector_path, glove_vocab):
-    transform = GloveVectorTransform(static_vector_path, glove_vocab)
-    return transform
 
 

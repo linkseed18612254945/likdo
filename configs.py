@@ -111,3 +111,43 @@ def build_image_classify_config():
     config.train.save_model_path = f'/home/ubuntu/likun/image_save_kernels/{config.data.name}_1106.pt'
 
     return config
+
+
+def build_text_classify_config():
+    config = BasicConfig()
+
+    # Data config setting
+    config.data.name = 'dbpedia'
+    config.data.train_text_path = '/home/ubuntu/likun/nlp_data/text_classify/dbpedia_csv/train.csv'
+    config.data.valid_text_path = None
+    config.data.classes_path = '/home/ubuntu/likun/nlp_data/text_classify/dbpedia_csv/classes.txt'
+    config.data.vocab_path = '/home/ubuntu/likun/vocab/dbpedia_vocab.json'
+
+    config.data.vocab_size = None
+    config.data.class_nums = None
+
+    # Model config setting
+    config.model.image_embedding_dim = 224
+    config.model.text_embedding_dim = 224
+    config.model.text_rnn_hidden_size = 224
+    config.model.text_rnn_num_layers = 1
+    config.model.text_rnn_is_bi = False
+    config.model.rnn_dropout_rate = 0.5
+
+    # IMAGINET model config
+    config.model.IMAGINET_alpha = 0.5
+
+    # Train config setting
+    config.train.use_gpu = True
+    config.train.gpu_index = 0
+    config.train.shuffle = True
+    config.train.num_workers = 0
+    config.train.train_data_nums = "all"
+    config.train.valid_data_nums = "all"
+    config.train.valid_percent = 0.1
+    config.train.lr = 0.001
+    config.train.batch_size = 128
+    config.train.epoch_size = 2
+    config.train.save_model_path = f'/home/ubuntu/likun/image_save_kernels/{config.data.name}_1106.pt'
+
+    return config

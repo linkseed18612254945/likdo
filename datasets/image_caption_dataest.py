@@ -16,7 +16,7 @@ logger = get_logger(__file__)
 
 class FlickrDataset(dataset.Dataset):
     @classmethod
-    def get_captions_from_json(cls, path):
+    def get_captions_from_json(cls, path, extra_param):
         dataset = io.load_json(path)['images']
         captions = []
         for i, d in enumerate(dataset):

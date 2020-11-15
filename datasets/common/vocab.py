@@ -22,6 +22,7 @@ EBD_BOS = '<bos>'
 EBD_EOS = '<eos>'
 
 
+
 class Vocab(object):
     def __init__(self, word2idx=None):
         self.word2idx = word2idx if word2idx is not None else dict()
@@ -96,7 +97,7 @@ class Vocab(object):
         return feed_dict
 
 
-def build_vocab(file_paths, compile_functions, vocab_path=None, threshold=0):
+def build_vocab(file_paths, compile_functions, extra_param=None, vocab_path=None, threshold=0):
     logger.critical(f"Start build vocab")
     assert len(file_paths) == len(compile_functions)
     counter = Counter()
@@ -104,7 +105,7 @@ def build_vocab(file_paths, compile_functions, vocab_path=None, threshold=0):
         if funcs is None:
             sentences = get_sentences_from_txt(file_path)
         else:
-            sentences = funcs(file_path)
+            sentences = funcs(file_path, extra_param)
         for caption in tqdm.tqdm(sentences, desc=f'Tokenizing'):
             tokens = nltk.tokenize.word_tokenize(str(caption).lower())
             counter.update(tokens)

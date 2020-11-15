@@ -1,141 +1,114 @@
 import torch
-from torchvision import transforms
 from torch.utils.data import dataset
 from utils import io
 from datasets.common.vocab import Vocab, build_vocab
-import os
-import random
-from PIL import Image
 from datasets.common.transforms import get_image_transform
 from torch.utils.data import dataloader, random_split
 import nltk
 from utils.logger import get_logger
+from utils.text_process import pad_sentences_batch
 
 
 logger = get_logger(__file__)
 
 class DBpediaCencept(dataset.Dataset):
     @classmethod
-    def get_description_from_csv(cls, path):
+    def get_description_from_csv(cls, path, extra_param):
         df = io.load_csv(path, without_header=True)
         return df[2].tolist()
 
     @classmethod
-    def get_item_from_csv(cls, path):
+    def get_item_from_csv(cls, path, extra_param):
         df = io.load_csv(path, without_header=True)
         return df[1].tolist()
 
     @classmethod
-    def get_class_name_from_csv(cls, path):
-        df = io.load_csv(path, without_header=True)
-        with open
-        return captions
+    def get_class_name_from_csv(cls, path, extra_param):
+        classes = io.load_txt(path)
+        return classes
 
-    @classmethod
-    def build_annotation(cls, caption_json, data_nums, caption_per_image):
-        annotations = dict()
-        data_nums = len(caption_json['images']) * 10 if data_nums == 'all' else data_nums
-        img_index = 0
-        for img_info in caption_json['images']:
-            if caption_per_image is not None:
-                use_sentences = random.choices(img_info['sentences'], k=caption_per_image)
-            else:
-                use_sentences = img_info['sentences']
-            for sentence in use_sentences:
-                tokens = sentence.get('tokens') or nltk.tokenize.word_tokenize(str(sentence['raw']).lower())
-                annotations[img_index] = {'filename': img_info['filename'], 'raw': sentence['raw'],
-                                          'tokens': tokens}
-                if img_index >= data_nums:
-                    break
-                img_index += 1
-        return annotations
-
-    def __init__(self, img_root, caption_json, vocab_json,
-                 transform=transforms.ToTensor(), target_transform=None,
-                 data_nums='all', caption_per_image=None):
-        super(FlickrDataset, self).__init__()
+    def __init__(self, text_path, classes_path, vocab_json, desc_transformer=None,
+                 item_transformer=None, label_transformer=None, data_nums='all'):
+        super(DBpediaCencept, self).__init__()
 
         # initialize args
-        self.img_root = img_root
-        if isinstance(caption_json, str):
-            self.caption_json = io.load_json(caption_json)
-        else:
-            self.caption_json = caption_json
-        self.dataset_name = self.caption_json['dataset']
+        self.text_path = text_path
         self.vocab = Vocab.from_json(vocab_json)
-        self.transform = transform
-        self.target_transform = target_transform
+        self.idx2classes = {i + 1: k for i, k in enumerate(io.load_txt(classes_path))}
+        self.data_nums = data_nums
+        self.class_nums = len(self.idx2classes)
 
-        self.annotations = FlickrDataset.build_annotation(self.caption_json, data_nums, caption_per_image)
+        self.desc_transformer = desc_transformer
+        self.item_transformer = item_transformer
+        self.label_transformer = label_transformer
+
+    @property
+    def annotations(self):
+        annotations = dict()
+        df = io.load_csv(self.text_path, without_header=True)
+        data_nums = df.shape[0] if self.data_nums == 'all' else self.data_nums
+        for index, row in df.iterrows():
+            tokens = nltk.tokenize.word_tokenize(row[2]).lower()
+            annotations[index] = {'label': row[0], 'label_name': self.idx2classes[row[0]],
+                                  'desc': tokens,  'item': row[1]}
+            if index >= data_nums:
+                break
+        return annotations
 
     def __getitem__(self, index):
-        # Image load and transform
-        img_name = self.annotations[index]['filename']
-        image = Image.open(os.path.join(self.img_root, img_name)).convert('RGB')
-        if image.size[0] < 225 or image.size[1] < 255:
-            image = image.resize((256, 256), Image.ANTIALIAS)
-        if self.transform is not None:
-            image = self.transform(image)
+        if self.desc_transformer is not None:
+            desc = self.desc_transformer((self.annotations[index]['desc']))
+        else:
+            desc = self.vocab.map_sequence(self.annotations[index]['desc'])
 
-        # question sentence numericalize
-        tokens = self.annotations[index].get('tokens')
-        caption = self.vocab.map_sequence(tokens)
+        if self.item_transformer is not None:
+            item = self.item_transformer((self.annotations[index]['item']))
+        else:
+            item = self.vocab.map_sequence(self.annotations[index]['item'])
 
-        return image, caption
+        if self.label_transformer is not None:
+            label_name = self.label_transformer((self.annotations[index]['label_name']))
+        else:
+            label_name = self.vocab.map_sequence(self.annotations[index]['label_name'])
+
+        return desc, item, self.annotations[index]['label'], label_name
 
     def __len__(self):
         return len(self.annotations.keys())
 
     @classmethod
     def collate_fn(cls, data):
-        """Creates mini-batch tensors from the list of tuples (image, caption).
-
-        We should build custom collate_fn rather than using default collate_fn,
-        because merging caption (including padding) is not supported in default.
-
-        Args:
-            data: list of tuple (image, caption).
-                - image: torch tensor of shape (3, 256, 256).
-                - caption: torch tensor of shape (?); variable length.
-
-        Returns:
-            images: torch tensor of shape (batch_size, 3, 256, 256).
-            targets: torch tensor of shape (batch_size, padded_length).
-            lengths: list; valid length for each padded caption.
-        """
         # Sort a data list by caption length (descending order).
-        data.sort(key=lambda x: len(x[1]), reverse=True)
-        images, captions = zip(*data)
+        data.sort(key=lambda x: len(x[0]), reverse=True)
+        descs, items, labels, label_names = zip(*data)
+        desc_targets, desc_lengths = pad_sentences_batch(descs)
+        item_targets, items_lengths = pad_sentences_batch(items)
+        label_name_targets, label_name_lengths = pad_sentences_batch(label_names)
 
-        # Merge images (from tuple of 3D tensor to 4D tensor).
-        images = torch.stack(images, 0)
-
-        # Merge captions (from tuple of 1D tensor to 2D tensor).
-        lengths = [len(cap) for cap in captions]
-        targets = torch.zeros(len(captions), max(lengths)).long()
-        for i, cap in enumerate(captions):
-            cap = torch.LongTensor(cap)
-            end = lengths[i]
-            targets[i, :end] = cap[:end]
         feed_dict = {
-            "images": images,
-            "captions": targets,
-            "lengths": lengths
+            "descs": desc_targets,
+            "desc_lengths": desc_lengths,
+            "items": item_targets,
+            "label": labels,
+            "label_name": label_name_targets,
+            "is_static_vector": False
         }
         return feed_dict
 
-def get_image_caption_data(config):
+def get_text_classify_data(config):
     transform = get_image_transform()
-    if 'flickr' in config.data.name:
-        train_dataset = FlickrDataset(img_root=config.data.image_root_path,
-                                      caption_json=config.data.train_caption_path,
-                                      vocab_json=config.data.vocab_path, transform=transform,
-                                      data_nums=config.data.train_data_nums)
+    if 'dbpedia' in config.data.name:
+        train_dataset = DBpediaCencept(text_path=config.data.train_text_path,
+                                       classes_path=config.data.classes_path,
+                                       vocab_json=config.data.vocab_path,
+                                       desc_transformer=None, item_transformer=None, label_transformer=None,
+                                       data_nums=config.train.train_data_nums)
         if config.data.valid_caption_path is not None:
-            valid_dataset = FlickrDataset(img_root=config.data.image_root_path,
-                                          caption_json=config.data.valid_caption_path,
-                                          vocab_json=config.data.vocab_path, transform=transform,
-                                          data_nums=config.data.valid_data_num)
+            valid_dataset = DBpediaCencept(text_path=config.data.valid_text_path,
+                                           classes_path=config.data.classes_path,
+                                           vocab_json=config.data.vocab_path,
+                                           desc_transformer=None, item_transformer=None, label_transformer=None,
+                                           data_nums=config.train.valid_data_nums)
         else:
             train_size = int((1 - config.train.valid_percent) * len(train_dataset))
             val_size = len(train_dataset) - train_size
@@ -144,6 +117,7 @@ def get_image_caption_data(config):
             valid_dataset = valid_dataset.dataset
     else:
         raise Exception(f'Not support data {config.data.name}')
+
     train_loader = dataloader.DataLoader(dataset=train_dataset, batch_size=config.train.batch_size, num_workers=config.train.num_workers,
                                          shuffle=config.train.shuffle, collate_fn=train_dataset.collate_fn)
     valid_loader = dataloader.DataLoader(dataset=valid_dataset, batch_size=config.train.batch_size, num_workers=config.train.num_workers,
@@ -154,11 +128,10 @@ def get_image_caption_data(config):
 if __name__ == '__main__':
     dbpedia_data_path = '/home/ubuntu/likun/nlp_data/text_classify/dbpedia_csv/train.csv'
     classes_path = '/home/ubuntu/likun/nlp_data/text_classify/dbpedia_csv/classes.txt'
-    vocab_path = '/home/ubuntu/likun/image_data/vocab/dbpedia_description.json'
+    vocab_path = '/home/ubuntu/likun/vocab/dbpedia_vocab.json'
 
     # build vocab
-    build_vocab(file_paths=(dbpedia_data_path,), compile_functions=(DBpediaCencept.get_description_from_csv,), vocab_path=vocab_path)
+    build_vocab(file_paths=(dbpedia_data_path, dbpedia_data_path, classes_path),
+                compile_functions=(DBpediaCencept.get_description_from_csv,DBpediaCencept.get_item_from_csv, DBpediaCencept.get_class_name_from_csv),
+                extra_param=None, vocab_path=vocab_path)
 
-    # build dataset
-    # trans = get_image_transform()
-    # ImageCaptionDataset(img_root=img_root, caption_json=caption_path, vocab_json=vocab_path, transform=trans)

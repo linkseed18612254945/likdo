@@ -12,11 +12,13 @@ def load_json(file_path):
         json_file = json.load(f)
     return json_file
 
-def load_csv(csv_path, without_header):
+def load_csv(csv_path, without_header=False, shuffle=False):
     if without_header:
         df = pd.read_csv(csv_path, header=None, encoding='utf-8')
     else:
         df = pd.read_csv(csv_path, encoding='utf-8')
+    if shuffle:
+        df = df.sample(frac=1).reset_index(drop=True)
     return df
 
 def load_txt(txt_path):

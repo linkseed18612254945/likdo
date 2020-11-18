@@ -132,3 +132,17 @@ class TrainEnv(object):
             meters.update(monitors, n=n)
             meters.update(extra)
             pbar.set_description(desc=f'Training {meters.epoch_common_format(epoch)}', refresh=True)
+
+    def valid_epoch(self, valid_loader, epoch, meters):
+        self._model.eval()
+        pbar = tqdm.tqdm(valid_loader)
+        for feed_dict in pbar:
+            self.optimizer.zero_grad()
+            feed_dict = {k: v.to(self._device) if 'to' in v.__dir__() else v for k, v in feed_dict.items()}
+            loss, output_dict, monitors, extra = self.step(feed_dict)
+            self.optimizer.step()
+            n = list(feed_dict.values())[0].size(0)
+            meters.update(loss=loss, n=n)
+            meters.update(monitors, n=n)
+            meters.update(extra)
+            pbar.set_description(desc=f'Training {meters.epoch_common_format(epoch)}', refresh=True)

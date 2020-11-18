@@ -22,7 +22,6 @@ EBD_BOS = '<bos>'
 EBD_EOS = '<eos>'
 
 
-
 class Vocab(object):
     def __init__(self, word2idx=None):
         self.word2idx = word2idx if word2idx is not None else dict()
@@ -97,7 +96,7 @@ class Vocab(object):
         return feed_dict
 
 
-def build_vocab(file_paths, compile_functions, extra_param=None, vocab_path=None, threshold=0):
+def build_vocab(file_paths, compile_functions, extra_param=None, vocab_path=None, threshold=0, add_special_token=True):
     logger.critical(f"Start build vocab")
     assert len(file_paths) == len(compile_functions)
     counter = Counter()
@@ -115,10 +114,11 @@ def build_vocab(file_paths, compile_functions, extra_param=None, vocab_path=None
 
     # Create a vocab wrapper and add some special tokens.
     vocab = Vocab()
-    vocab.add_word(EBD_PAD)
-    vocab.add_word(EBD_BOS)
-    vocab.add_word(EBD_EOS)
-    vocab.add_word(EBD_UNKNOWN)
+    if add_special_token:
+        vocab.add_word(EBD_PAD)
+        vocab.add_word(EBD_BOS)
+        vocab.add_word(EBD_EOS)
+        vocab.add_word(EBD_UNKNOWN)
 
     # Add words to the vocabulary.
     for i, word in enumerate(words):

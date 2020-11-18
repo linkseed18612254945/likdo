@@ -88,10 +88,10 @@ def text_classify_main():
     logger.critical("Build train and validation data")
     train_dataset, train_loader, valid_dataset, valid_loader = get_text_classify_data(config)
     config.data.vocab_size = len(train_dataset.vocab)
-    config.data.class_nums = len(train_dataset.class_nums)
+    config.data.num_labels = train_dataset.num_labels
 
     logger.critical("Init model and train environment")
-    model = text_classify_kernels.IMAGINET(config).to(device)
+    model = text_classify_kernels.BertBaseline(config).to(device)
     optimizer = optim.Adam(params=model.parameters(), lr=config.train.lr)
     trainer = env.TrainEnv(model, optimizer, config, device)
 
@@ -104,6 +104,6 @@ def text_classify_main():
 
 
 if __name__ == '__main__':
-    image_caption_main()
+    text_classify_main()
 
 

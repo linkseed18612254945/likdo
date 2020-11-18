@@ -87,6 +87,7 @@ def build_image_classify_config():
     config.data.valid_image_root_path = '/home/ubuntu/likun/image_data/CLEVR_v1.0/images/val'
     config.data.train_data_nums = 'all'
     config.data.valid_data_nums = 'all'
+    config.data.shuffle = True
 
     config.data.question_vocab_size = None
     config.data.answer_vocab_size = None
@@ -124,9 +125,10 @@ def build_text_classify_config():
     config.data.vocab_path = '/home/ubuntu/likun/vocab/dbpedia_vocab.json'
 
     config.data.vocab_size = None
-    config.data.class_nums = None
+    config.data.num_labels = None
 
     # Model config setting
+    config.model.bert_base_path = '/home/ubuntu/likun/nlp_pretrained/bert-google-uncase-base'
     config.model.image_embedding_dim = 224
     config.model.text_embedding_dim = 224
     config.model.text_rnn_hidden_size = 224
@@ -142,7 +144,7 @@ def build_text_classify_config():
     config.train.gpu_index = 0
     config.train.shuffle = True
     config.train.num_workers = 0
-    config.train.train_data_nums = "all"
+    config.train.train_data_nums = 10000
     config.train.valid_data_nums = "all"
     config.train.valid_percent = 0.1
     config.train.lr = 0.001

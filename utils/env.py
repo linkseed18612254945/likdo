@@ -119,6 +119,14 @@ class TrainEnv(object):
 
         return loss, monitors, output_dict, extra
 
+    def evaluate(self, feed_dict):
+        assert not self._model.training, 'Evaluating a training-mode model.'
+        begin = time.time()
+        with torch.no_grad():
+            loss, monitors, output_dict = self._model(feed_dict)
+        end = time.time()
+        return loss, output_dict, dict(gpu_time=end - begin)
+
     def train_epoch(self, train_loader, epoch, meters):
         self._model.train()
         pbar = tqdm.tqdm(train_loader)
@@ -133,16 +141,12 @@ class TrainEnv(object):
             meters.update(extra)
             pbar.set_description(desc=f'Training {meters.epoch_common_format(epoch)}', refresh=True)
 
-    def valid_epoch(self, valid_loader, epoch, meters):
+    def valid_epoch(self, valid_loader, epoch, evaluate_meter):
         self._model.eval()
         pbar = tqdm.tqdm(valid_loader)
         for feed_dict in pbar:
-            self.optimizer.zero_grad()
             feed_dict = {k: v.to(self._device) if 'to' in v.__dir__() else v for k, v in feed_dict.items()}
-            loss, output_dict, monitors, extra = self.step(feed_dict)
-            self.optimizer.step()
+            loss, output_dict, _ = self.evaluate(feed_dict)
             n = list(feed_dict.values())[0].size(0)
             meters.update(loss=loss, n=n)
-            meters.update(monitors, n=n)
-            meters.update(extra)
-            pbar.set_description(desc=f'Training {meters.epoch_common_format(epoch)}', refresh=True)
+            pbar.set_description(desc=f'Validating {meters.epoch_common_format(epoch)}', refresh=True)

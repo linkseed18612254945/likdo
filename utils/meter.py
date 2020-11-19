@@ -13,6 +13,7 @@ import itertools
 import collections
 import json
 from utils import io
+from utils import evaluates
 
 
 class AverageMeter(object):
@@ -40,6 +41,26 @@ class AverageMeter(object):
         self.tot_count += n
         self.avg = self.sum / self.count
 
+
+class ValidMeter(object):
+    """Computes and stores the average and current value"""
+    tot_count = 0
+
+    def __init__(self):
+        self.true = []
+        self.predict = []
+        self.loss = 0
+
+    def reset(self):
+        self.true = []
+        self.predict = []
+        self.loss = 0
+
+    def update(self, loss, feed_dict, output_dict):
+        raise NotImplementedError
+
+    def evaluate(self):
+        raise NotImplementedError
 
 class GroupMeters(object):
     def __init__(self):
@@ -112,3 +133,6 @@ class GroupMeters(object):
         else:
             meters_kv = values
         return meters_kv
+
+if __name__ == '__main__':
+    pass

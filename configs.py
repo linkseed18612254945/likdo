@@ -136,15 +136,12 @@ def build_text_classify_config():
     config.model.text_rnn_is_bi = False
     config.model.rnn_dropout_rate = 0.5
 
-    # IMAGINET model config
-    config.model.IMAGINET_alpha = 0.5
-
     # Train config setting
     config.train.use_gpu = True
-    config.train.gpu_index = 0
+    config.train.gpu_index = 1
     config.train.shuffle = True
     config.train.num_workers = 0
-    config.train.train_data_nums = 10000
+    config.train.train_data_nums = 1000
     config.train.valid_data_nums = "all"
     config.train.valid_percent = 0.1
     config.train.lr = 0.001

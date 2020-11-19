@@ -9,6 +9,7 @@ from datasets.text_classify_dataset import get_text_classify_data
 from utils.meter import GroupMeters
 from utils.cuda import get_gpu_device
 from utils.logger import get_logger
+from eval import text_classify_meters
 
 
 logger = get_logger(__file__)
@@ -97,10 +98,14 @@ def text_classify_main():
 
     logger.critical("Start to train")
     meters = GroupMeters()
+    valid_meter = text_classify_meters.DBpediaConceptMeter()
     for epoch in range(1, config.train.epoch_size + 1):
         meters.reset()
         trainer.train_epoch(train_loader, epoch, meters)
         trainer.save_checkpoint(config.train.save_model_path)
+
+        meters.reset()
+        trainer.valid_epoch(valid_loader, epoch, valid_meter)
 
 
 if __name__ == '__main__':

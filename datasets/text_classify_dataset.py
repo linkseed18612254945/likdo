@@ -131,8 +131,8 @@ class DBpediaConcept(dataset.Dataset):
         self.idx2classes = io.load_txt(classes_path)
         self.data_nums = data_nums
         self.num_labels = len(self.idx2classes)
-        self.annotations = self.get_annotations()
         self.train_labels = train_labels
+        self.annotations = self.get_annotations()
 
         self.text_transformer = text_transformer
         self.item_transformer = item_transformer

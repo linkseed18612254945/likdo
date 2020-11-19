@@ -2,17 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b276552d-b40e-4f16-98e2-3f59e72d58de" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/evaluates.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/configs.py" beforeDir="false" afterPath="$PROJECT_DIR$/configs.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/datasets/common/transforms.py" beforeDir="false" afterPath="$PROJECT_DIR$/datasets/common/transforms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/datasets/common/vocab.py" beforeDir="false" afterPath="$PROJECT_DIR$/datasets/common/vocab.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/datasets/text_classify_dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/datasets/text_classify_dataset.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/text_classify_kernels.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/text_classify_kernels.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils/env.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/env.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/io.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/io.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/text_process.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/text_process.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/meter.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/meter.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,7 +50,7 @@
       <recent name="C:\Users\51694\PycharmProjects\likdo" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.text_classify_dataset">
+  <component name="RunManager" selected="Python.main">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="likdo" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -166,9 +163,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.main" />
         <item itemvalue="Python.text_classify_dataset" />
         <item itemvalue="Python.test" />
-        <item itemvalue="Python.main" />
         <item itemvalue="Python.vocab" />
         <item itemvalue="Python.my_do" />
       </list>
@@ -189,7 +186,7 @@
       <workItem from="1605179580006" duration="1432000" />
       <workItem from="1605234891029" duration="27000" />
       <workItem from="1605247384020" duration="30385000" />
-      <workItem from="1605668158552" duration="5825000" />
+      <workItem from="1605668158552" duration="10241000" />
     </task>
     <task id="LOCAL-00001" summary="docker work">
       <created>1604491391895</created>
@@ -275,7 +272,14 @@
       <option name="project" value="LOCAL" />
       <updated>1605436946248</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="complete 20news dataset">
+      <created>1605703603390</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1605703603390</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -291,7 +295,8 @@
     <MESSAGE value="build new dataset" />
     <MESSAGE value="start text classify" />
     <MESSAGE value="start text classify kernels" />
-    <option name="LAST_COMMIT_MESSAGE" value="start text classify kernels" />
+    <MESSAGE value="complete 20news dataset" />
+    <option name="LAST_COMMIT_MESSAGE" value="complete 20news dataset" />
   </component>
   <component name="WindowStateProjectService">
     <state x="275" y="22" key="#Deployment" timestamp="1605450557316">
@@ -306,10 +311,10 @@
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state x="259" y="8" key="#SSH_Configurations/0.0.1366.728@0.0.1366.728" timestamp="1604562815452" />
-    <state x="269" y="0" key="CommitChangelistDialog2" timestamp="1605436944827">
+    <state x="269" y="0" key="CommitChangelistDialog2" timestamp="1605703601720">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state x="269" y="0" key="CommitChangelistDialog2/0.0.1366.728@0.0.1366.728" timestamp="1605436944827" />
+    <state x="269" y="0" key="CommitChangelistDialog2/0.0.1366.728@0.0.1366.728" timestamp="1605703601720" />
     <state x="463" y="118" key="FileChooserDialogImpl" timestamp="1604566136497">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
@@ -318,22 +323,22 @@
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state x="555" y="261" key="Github.ShareDialog/0.0.1366.728@0.0.1366.728" timestamp="1604491415379" />
-    <state width="1323" height="232" key="GridCell.Tab.0.bottom" timestamp="1605703312901">
+    <state width="1323" height="216" key="GridCell.Tab.0.bottom" timestamp="1605788322673">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1323" height="232" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1605703312901" />
-    <state width="1323" height="232" key="GridCell.Tab.0.center" timestamp="1605703312901">
+    <state width="1323" height="216" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1605788322673" />
+    <state width="1323" height="216" key="GridCell.Tab.0.center" timestamp="1605788322673">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1323" height="232" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1605703312901" />
-    <state width="1323" height="232" key="GridCell.Tab.0.left" timestamp="1605703312901">
+    <state width="1323" height="216" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1605788322673" />
+    <state width="1323" height="216" key="GridCell.Tab.0.left" timestamp="1605788322673">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1323" height="232" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1605703312901" />
-    <state width="1323" height="232" key="GridCell.Tab.0.right" timestamp="1605703312901">
+    <state width="1323" height="216" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1605788322673" />
+    <state width="1323" height="216" key="GridCell.Tab.0.right" timestamp="1605788322673">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1323" height="232" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1605703312901" />
+    <state width="1323" height="216" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1605788322673" />
     <state width="1323" height="220" key="GridCell.Tab.1.bottom" timestamp="1605703286797">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
@@ -362,10 +367,10 @@
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state x="184" y="8" key="SettingsEditor/0.0.1366.728@0.0.1366.728" timestamp="1604767875726" />
-    <state x="275" y="97" key="Vcs.Push.Dialog.v2" timestamp="1605437120909">
+    <state x="275" y="97" key="Vcs.Push.Dialog.v2" timestamp="1605703610077">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state x="275" y="97" key="Vcs.Push.Dialog.v2/0.0.1366.728@0.0.1366.728" timestamp="1605437120909" />
+    <state x="275" y="97" key="Vcs.Push.Dialog.v2/0.0.1366.728@0.0.1366.728" timestamp="1605703610077" />
     <state width="691" height="372" key="XDebugger.FullValuePopup" timestamp="1605449581851">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
@@ -452,7 +457,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/utils/env.py</url>
-          <line>127</line>
+          <line>135</line>
           <option name="timeStamp" value="58" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -496,6 +501,6 @@
     <SUITE FILE_PATH="coverage/likdo$text_classify_dataset.coverage" NAME="text_classify_dataset Coverage Results" MODIFIED="1605703312894" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/datasets" />
     <SUITE FILE_PATH="coverage/likdo$train.coverage" NAME="train Coverage Results" MODIFIED="1604648918304" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/my_image_caption" />
     <SUITE FILE_PATH="coverage/likdo$vocab.coverage" NAME="vocab Coverage Results" MODIFIED="1605000591268" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/datasets/common" />
-    <SUITE FILE_PATH="coverage/likdo$main.coverage" NAME="main Coverage Results" MODIFIED="1605455198802" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/likdo$main.coverage" NAME="main Coverage Results" MODIFIED="1605787798994" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

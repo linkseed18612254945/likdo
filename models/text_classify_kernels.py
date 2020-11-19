@@ -10,11 +10,11 @@ class BertBaseline(nn.Module):
                                                                         output_attentions=False, output_hidden_states=False)
 
     def forward(self, feed_dict):
-        descs = feed_dict['descs']
+        texts = feed_dict['texts']
         labels = feed_dict['labels']
         monitors = {}
-        attention_mask = (descs > 0)
-        loss, logits = self.bert_model.forward(descs, token_type_ids=None, attention_mask=attention_mask, labels=labels)
+        attention_mask = (texts > 0)
+        loss, logits = self.bert_model.forward(texts, token_type_ids=None, attention_mask=attention_mask, labels=labels)
         output_dict = {
             'predict_logits': logits
         }

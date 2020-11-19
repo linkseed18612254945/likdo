@@ -49,18 +49,19 @@ class ValidMeter(object):
     def __init__(self):
         self.true = []
         self.predict = []
-        self.loss = 0
+        self.loss = AverageMeter()
 
     def reset(self):
         self.true = []
         self.predict = []
-        self.loss = 0
+        self.loss.reset()
 
     def update(self, loss, feed_dict, output_dict):
         raise NotImplementedError
 
     def evaluate(self):
         raise NotImplementedError
+
 
 class GroupMeters(object):
     def __init__(self):

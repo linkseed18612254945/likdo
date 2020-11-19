@@ -89,7 +89,7 @@ class TrainEnv(object):
             end_time = time.time()
 
         self.trigger_event('forward:before', self, feed_dict)
-        loss, monitors, output_dict = self._model(feed_dict)
+        loss, output_dict, monitors = self._model(feed_dict)
         self.trigger_event('forward:after', self, feed_dict, loss, monitors, output_dict)
 
         if measure_time:
@@ -117,15 +117,13 @@ class TrainEnv(object):
 
         self.trigger_event('step:after', self)
 
-        return loss, monitors, output_dict, extra
+        return loss, output_dict, monitors, extra
 
     def evaluate(self, feed_dict):
         assert not self._model.training, 'Evaluating a training-mode model.'
-        begin = time.time()
         with torch.no_grad():
-            loss, monitors, output_dict = self._model(feed_dict)
-        end = time.time()
-        return loss, output_dict, dict(gpu_time=end - begin)
+            loss, output_dict, monitors = self._model(feed_dict)
+        return loss, output_dict, monitors
 
     def train_epoch(self, train_loader, epoch, meters):
         self._model.train()
@@ -146,7 +144,8 @@ class TrainEnv(object):
         pbar = tqdm.tqdm(valid_loader)
         for feed_dict in pbar:
             feed_dict = {k: v.to(self._device) if 'to' in v.__dir__() else v for k, v in feed_dict.items()}
-            loss, output_dict, _ = self.evaluate(feed_dict)
-            n = list(feed_dict.values())[0].size(0)
-            meters.update(loss=loss, n=n)
-            pbar.set_description(desc=f'Validating {meters.epoch_common_format(epoch)}', refresh=True)
+            loss, output_dict, monitors = self.evaluate(feed_dict)
+            evaluate_meter.update(loss, feed_dict, output_dict)
+            pbar.set_description(desc=f'Validating {epoch}', refresh=True)
+        evaluate_meter.evaluate()
+

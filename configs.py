@@ -141,7 +141,7 @@ def build_text_classify_config():
     config.train.gpu_index = 1
     config.train.shuffle = True
     config.train.num_workers = 0
-    config.train.train_data_nums = 1000
+    config.train.train_data_nums = 500
     config.train.valid_data_nums = "all"
     config.train.valid_percent = 0.1
     config.train.lr = 0.001

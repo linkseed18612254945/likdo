@@ -20,6 +20,7 @@ EBD_PAD = EBD_ALL_ZEROS = '<pad>'
 EBD_UNKNOWN = '<unk>'
 EBD_BOS = '<bos>'
 EBD_EOS = '<eos>'
+import json
 
 
 class Vocab(object):
@@ -29,7 +30,12 @@ class Vocab(object):
 
     @classmethod
     def from_json(cls, json_file):
-        return cls(io.load_json(json_file))
+        try:
+            w2i = cls(io.load_json(json_file))
+        except json.decoder.JSONDecodeError:
+            words = io.load_txt(json_file)
+            w2i = cls({w: i for i, w in enumerate(words)})
+        return w2i
 
     # @classmethod
     # def from_text(cls, tokens, tokenizer=None):
@@ -61,7 +67,7 @@ class Vocab(object):
     @property
     def idx2word(self):
         if self._idx2word is None or len(self.word2idx) != len(self._idx2word):
-            self._idx2word = {v: k for k, v in self.word2idx.items()}
+            self._idx2word = [k for k, v in sorted(self.word2idx.items(), key=lambda x: x[1])]
         return self._idx2word
 
     def __len__(self):

@@ -1,5 +1,13 @@
 import torch
 import pandas as pd
+import random
+
+
+def label_name_random_split(label_names, first_group_num):
+    assert first_group_num <= len(label_names), "First group num should less than label type's num"
+    first_group = random.sample(label_names, first_group_num)
+    last_group = [label for label in label_names if label not in first_group]
+    return first_group, last_group
 
 
 def pad_sentences_batch(sentences_batch):

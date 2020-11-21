@@ -5,9 +5,9 @@ from datasets.common.vocab import Vocab, build_vocab
 from datasets.common.transforms import *
 from torch.utils.data import dataloader, random_split
 from utils.logger import get_logger
-from utils.text_process import pad_sentences_batch
+from utils.text_utils import pad_sentences_batch
 import tqdm
-import pandas as pd
+from collections import defaultdict
 logger = get_logger(__file__)
 
 
@@ -27,16 +27,19 @@ class News20(dataset.Dataset):
 
     def __init__(self, text_path, text_vocab_json, label_vocab_json, text_preprocess=None,
                  text_transformer=None, label_transformer=None, label_name_transformer=None,
-                 data_nums='all', train_labels='all'):
+                 data_nums='all', use_labels='all', single_label_max_data_nums='all'):
         super(News20, self).__init__()
 
         # initialize args
         self.text_path = text_path
         self.vocab = Vocab.from_json(text_vocab_json)
         self.label_vocab = Vocab.from_json(label_vocab_json)
+        self.idx2classes = self.label_vocab.idx2word
         self.text_preprocess = text_preprocess
         self.data_nums = data_nums
-        self.train_labels = train_labels
+        self.use_labels = use_labels
+        self.single_label_max_data_nums = single_label_max_data_nums
+        self.label_counts = defaultdict(int)
         self.num_labels = len(self.label_vocab.idx2word)
 
         self.annotations = self.get_annotations()
@@ -46,20 +49,27 @@ class News20(dataset.Dataset):
         self.label_name_transformer = label_name_transformer
 
     def get_annotations(self):
-        annotations = dict()
+        annotations = defaultdict(dict)
         df = io.load_csv(self.text_path, without_header=False, shuffle=True)
         data_nums = df.shape[0] if self.data_nums == 'all' else self.data_nums
-        for index, row in tqdm.tqdm(df.iterrows(), desc='Build dataset annotations', total=data_nums):
-            if self.train_labels != 'all' and row['label'] not in self.train_labels:
+        annotation_index = 0
+        for _, row in tqdm.tqdm(df.iterrows(), desc='Build dataset annotations', total=data_nums):
+            label_name = row['label'].lower()
+            if self.use_labels != 'all' and label_name not in self.use_labels:
+                continue
+            if self.single_label_max_data_nums != 'all' and self.label_counts[label_name] > self.single_label_max_data_nums:
                 continue
 
-            text = row['text']
+            text = row['text'].lower()
             if self.text_preprocess is not None:
                 text = self.text_preprocess(text)
-            text = nltk.tokenize.word_tokenize(text.lower())
-            annotations[index] = {'label': self.label_vocab.word2idx[row['label']], 'label_name': row['label'],
-                                  'text': text}
-            if index >= data_nums:
+            text = nltk.tokenize.word_tokenize(text)
+            annotations[annotation_index] = {'label': self.label_vocab.word2idx[label_name],
+                                             'label_name': label_name,
+                                             'text': text}
+            self.label_counts[label_name] += 1
+            annotation_index += 1
+            if annotation_index >= data_nums:
                 break
         return annotations
 
@@ -107,31 +117,33 @@ class News20(dataset.Dataset):
 class DBpediaConcept(dataset.Dataset):
     @classmethod
     def get_text_from_csv(cls, path, extra_param):
-        df = io.load_csv(path, without_header=True)
-        return df[2].tolist()
+        df = io.load_csv(path, without_header=False)
+        return df['text'].tolist()
 
     @classmethod
     def get_item_from_csv(cls, path, extra_param):
-        df = io.load_csv(path, without_header=True)
-        return df[1].tolist()
+        df = io.load_csv(path, without_header=False)
+        return df['item'].tolist()
 
     @classmethod
-    def get_class_name_from_csv(cls, path, extra_param):
-        classes = io.load_txt(path)
-        return classes
+    def get_label_name_from_csv(cls, path, extra_param):
+        df = io.load_csv(path, without_header=False)
+        return df['label'].tolist()
 
-    def __init__(self, text_path, classes_path, vocab_json, text_transformer=None,
+    def __init__(self, text_path, text_vocab_json, label_vocab_json, text_transformer=None,
                  item_transformer=None, label_transformer=None, label_name_transformer=None,
-                 data_nums='all', train_labels='all'):
+                 data_nums='all', use_labels='all', single_label_max_data_nums='all'):
         super(DBpediaConcept, self).__init__()
 
         # initialize args
         self.text_path = text_path
-        self.vocab = Vocab.from_json(vocab_json)
-        self.idx2classes = io.load_txt(classes_path)
+        self.vocab = Vocab.from_json(text_vocab_json)
+        self.label_vocab = Vocab.from_json(label_vocab_json)
         self.data_nums = data_nums
-        self.num_labels = len(self.idx2classes)
-        self.train_labels = train_labels
+        self.num_labels = len(self.label_vocab.idx2word)
+        self.use_labels = use_labels
+        self.single_label_max_data_nums = single_label_max_data_nums
+        self.label_counts = defaultdict(int)
         self.annotations = self.get_annotations()
 
         self.text_transformer = text_transformer
@@ -140,16 +152,23 @@ class DBpediaConcept(dataset.Dataset):
         self.label_name_transformer = label_name_transformer
 
     def get_annotations(self):
-        annotations = dict()
-        df = io.load_csv(self.text_path, without_header=True, shuffle=True)
+        annotations = defaultdict(dict)
+        df = io.load_csv(self.text_path, without_header=False, shuffle=True)
         data_nums = df.shape[0] if self.data_nums == 'all' else self.data_nums
-        for index, row in tqdm.tqdm(df.iterrows(), desc='Build dataset annotations', total=data_nums):
-            # tokens = nltk.tokenize.word_tokenize(row[2].lower())
-            if self.train_labels != 'all' and self.idx2classes[row[0] - 1] not in self.train_labels:
+        annotation_index = 0
+        for _, row in tqdm.tqdm(df.iterrows(), desc='Build dataset annotations', total=data_nums):
+            label_name = row['label'].lower()
+            if self.use_labels != 'all' and label_name not in self.use_labels:
                 continue
-            annotations[index] = {'label': row[0] - 1, 'label_name': self.idx2classes[row[0] - 1],
-                                  'text': row[2].lower(),  'item': row[1]}
-            if index >= data_nums:
+            if self.single_label_max_data_nums != 'all' and self.label_counts[label_name] > self.single_label_max_data_nums:
+                continue
+            annotations[annotation_index] = {'label': self.label_vocab.word2idx[label_name],
+                                             'label_name': label_name,
+                                             'text': row['text'].lower(),
+                                             'item': row['item'].lower()}
+            self.label_counts[label_name] += 1
+            annotation_index += 1
+            if annotation_index >= data_nums:
                 break
         return annotations
 
@@ -176,6 +195,7 @@ class DBpediaConcept(dataset.Dataset):
 
         return text, item, label, label_name
 
+
     def __len__(self):
         return len(self.annotations.keys())
 
@@ -186,6 +206,7 @@ class DBpediaConcept(dataset.Dataset):
         texts, items, labels, label_names = zip(*data)
         if isinstance(labels[0], torch.Tensor):
             labels = torch.stack(labels, 0).squeeze()
+
         text_targets, text_lengths = pad_sentences_batch(texts)
         item_targets, items_lengths = pad_sentences_batch(items)
         label_name_targets, label_name_lengths = pad_sentences_batch(label_names)
@@ -200,70 +221,96 @@ class DBpediaConcept(dataset.Dataset):
         }
         return feed_dict
 
-def get_text_classify_data(config):
-    bert_transform = BertTokenizerTransformer(config.model.bert_base_path)
-    longtensor_transform = torch.LongTensor
+def get_train_data(config, text_transformer=None, label_transformer=torch.LongTensor, label_name_transformer=None, collate_fn='default'):
     if 'dbpedia' in config.data.name:
         train_dataset = DBpediaConcept(text_path=config.data.train_text_path,
-                                       classes_path=config.data.classes_path,
-                                       vocab_json=config.data.vocab_path,
-                                       text_transformer=bert_transform, label_transformer=longtensor_transform,
-                                       data_nums=config.train.train_data_nums)
+                                       text_vocab_json=config.data.vocab_path,
+                                       label_vocab_json=config.data.label_vocab_path,
+                                       text_transformer=text_transformer, label_transformer=label_transformer,
+                                       label_name_transformer=label_name_transformer,
+                                       data_nums=config.data.train_data_nums, use_labels=config.data.train_use_labels,
+                                       single_label_max_data_nums=config.data.train_single_label_max_data_nums)
         if config.data.valid_text_path is not None:
             valid_dataset = DBpediaConcept(text_path=config.data.valid_text_path,
-                                           classes_path=config.data.classes_path,
-                                           vocab_json=config.data.vocab_path,
-                                           text_transformer=bert_transform, label_transformer=longtensor_transform,
-                                           data_nums=config.train.valid_data_nums)
+                                           text_vocab_json=config.data.vocab_path,
+                                           label_vocab_json=config.data.label_vocab_path,
+                                           text_transformer=text_transformer, label_transformer=label_transformer,
+                                           label_name_transformer=label_name_transformer,
+                                           data_nums=config.data.valid_data_nums,
+                                           use_labels=config.data.valid_use_labels,
+                                           single_label_max_data_nums=config.data.valid_single_label_max_data_nums)
         else:
             train_size = int((1 - config.train.valid_percent) * len(train_dataset))
             val_size = len(train_dataset) - train_size
             train_dataset, valid_dataset = random_split(train_dataset, [train_size, val_size])
-            train_dataset = train_dataset.dataset
-            valid_dataset = valid_dataset.dataset
+
     elif 'news20' in config.data.name:
         train_dataset = News20(text_path=config.data.train_text_path,
                                text_vocab_json=config.data.vocab_path,
                                label_vocab_json=config.data.label_vocab_path,
-                               text_transformer=bert_transform, label_transformer=longtensor_transform,
-                               label_name_transformer=None, data_nums=config.train.train_data_nums)
+                               text_transformer=text_transformer, label_transformer=label_transformer,
+                               label_name_transformer=label_name_transformer,
+                               data_nums=config.data.train_data_nums)
         if config.data.valid_text_path is not None:
             valid_dataset = News20(text_path=config.data.valid_text_path,
                                    text_vocab_json=config.data.vocab_path,
                                    label_vocab_json=config.data.label_vocab_path,
-                                   text_transformer=bert_transform, label_transformer=longtensor_transform,
-                                   label_name_transformer=None, data_nums=config.train.train_data_nums)
+                                   text_transformer=text_transformer, label_transformer=label_transformer,
+                                   label_name_transformer=label_name_transformer, data_nums=config.data.train_data_nums)
         else:
             train_size = int((1 - config.train.valid_percent) * len(train_dataset))
             val_size = len(train_dataset) - train_size
             train_dataset, valid_dataset = random_split(train_dataset, [train_size, val_size])
-            train_dataset = train_dataset.dataset
-            valid_dataset = valid_dataset.dataset
     else:
         raise Exception(f'Not support data {config.data.name}')
 
+    train_dataset = train_dataset.dataset if isinstance(train_dataset, dataset.Subset) else train_dataset
+    valid_dataset = valid_dataset.dataset if isinstance(valid_dataset, dataset.Subset) else valid_dataset
+
+    collate_fn = train_dataset.collate_fn if collate_fn == 'default' else collate_fn
     train_loader = dataloader.DataLoader(dataset=train_dataset, batch_size=config.train.batch_size, num_workers=config.train.num_workers,
-                                         shuffle=config.train.shuffle, collate_fn=train_dataset.collate_fn)
+                                         shuffle=config.train.shuffle, collate_fn=collate_fn)
     valid_loader = dataloader.DataLoader(dataset=valid_dataset, batch_size=config.train.batch_size, num_workers=config.train.num_workers,
-                                         shuffle=config.train.shuffle, collate_fn=valid_dataset.collate_fn)
+                                         shuffle=config.train.shuffle, collate_fn=collate_fn)
     return train_dataset, train_loader, valid_dataset, valid_loader
 
 
+def get_test_data(config, text_transformer=None, label_transformer=torch.LongTensor, label_name_transformer=None, collate_fn='default'):
+    if 'dbpedia' in config.data.name:
+        test_dataset = DBpediaConcept(text_path=config.data.test_text_path,
+                                      text_vocab_json=config.data.vocab_path,
+                                      label_vocab_json=config.data.label_vocab_path,
+                                      text_transformer=text_transformer, label_transformer=label_transformer,
+                                      label_name_transformer=label_name_transformer,
+                                      data_nums=config.data.test_data_nums, use_labels=config.data.test_use_labels,
+                                      single_label_max_data_nums=config.data.test_single_label_max_data_nums)
+
+    elif 'news20' in config.data.name:
+        test_dataset = News20(text_path=config.data.test_text_path,
+                              text_vocab_json=config.data.vocab_path,
+                              label_vocab_json=config.data.label_vocab_path,
+                              text_transformer=text_transformer, label_transformer=label_transformer,
+                              label_name_transformer=label_name_transformer,
+                              data_nums=config.data.test_data_nums, use_labels=config.data.test_use_labels,
+                              single_label_max_data_nums=config.data.test_single_label_max_data_nums)
+    else:
+        raise Exception(f'Not support data {config.data.name}')
+    return test_dataset
+
 if __name__ == '__main__':
-    data_path = '/home/ubuntu/likun/nlp_data/text_classify/20news-18828/train_flat.csv'
-    classes_path = '/home/ubuntu/likun/nlp_data/text_classify/20news-18828/train_flat.csv'
+    data_path = '/home/ubuntu/likun/nlp_data/text_classify/dbpedia_csv/train.csv'
     text_vocab_path = '/home/ubuntu/likun/vocab/news20_vocab.json'
-    label_vocab_path = '/home/ubuntu/likun/vocab/news20_classes.json'
+    label_vocab_path = '/home/ubuntu/likun/vocab/dbpedia_label_vocab.json'
 
     #
     # # build vocab
-    # build_vocab(file_paths=(classes_path,),
-    #             compile_functions=(News20.get_class_name_from_csv,),
-    #             extra_param=None, vocab_path=vocab_path, add_special_token=False)
+    build_vocab(file_paths=(data_path,),
+                compile_functions=(DBpediaConcept.get_label_name_from_csv,),
+                extra_param=None, vocab_path=label_vocab_path, add_special_token=False)
 
-    # build dataset
-    train_dataset = News20(text_path=data_path,
-                           text_vocab_json=text_vocab_path,
-                           label_vocab_json=label_vocab_path,
-                           text_transformer=None, label_transformer=None,
-                           label_name_transformer=None, data_nums=5000)
+    # # build dataset
+    # train_dataset = News20(text_path=data_path,
+    #                        text_vocab_json=text_vocab_path,
+    #                        label_vocab_json=label_vocab_path,
+    #                        text_transformer=None, label_transformer=None,
+    #                        label_name_transformer=None, data_nums=5000)

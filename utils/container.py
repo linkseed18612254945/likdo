@@ -106,4 +106,5 @@ class BasicConfig(G):
         self.data = G()
         self.model = G()
         self.train = G()
+        self.predict = G()
 

@@ -23,6 +23,7 @@ class ImageCNNEncoder(nn.Module):
         feature = self.bn(feature)
         return feature
 
+
 class TextRNNEncoder(nn.Module):
     def __init__(self, vocab_size, embedding_dim, hidden_size, num_layers, is_bi=False, dropout=0.1):
         super(TextRNNEncoder, self).__init__()
@@ -36,3 +37,34 @@ class TextRNNEncoder(nn.Module):
         seqs_embedding = self.dropout(seqs_embedding)
         outputs, (h, c) = self.rnn(seqs_embedding)
         return outputs, h
+
+
+class TextCNN(nn.Module):
+    def __init__(self, input_size, embedding_size, output_size, filter_sizes=(1, 2, 3, 4), num_filters=3, pooling_method='max'):
+        super(TextCNN, self).__init__()
+        self.filter_sizes = filter_sizes
+        self.num_filters = num_filters
+        self.pooling_method = pooling_method
+        self.embedding = nn.Embedding(input_size, embedding_size)
+        self.convs = nn.ModuleList([nn.Conv2d(1, num_filters, kernel_size=(filter_size, embedding_size)) for filter_size in filter_sizes])
+        self.activate = nn.ReLU()
+        self.linear = nn.Linear(len(filter_sizes) * num_filters, output_size)
+
+    def forward(self, x):
+        embedded = self.embedding(x)
+        sequence_length = embedded.shape[1]
+        conv_pooling_res = []
+        for conv in self.convs:
+            conved = conv(embedded.unsqueeze(dim=1))
+            conved = self.activate(conved)
+            if self.pooling_method == 'max':
+                pooling = nn.MaxPool2d(kernel_size=(sequence_length - conv.kernel_size[0] + 1, 1))
+            else:
+                pooling = nn.AvgPool2d(kernel_size=(sequence_length - conv.kernel_size[0] + 1, 1))
+            pooled = pooling(conved)
+            conv_pooling_res.append(pooled)
+
+        output = torch.cat(conv_pooling_res, dim=3)
+        output = torch.reshape(output, shape=(-1, len(self.filter_sizes) * self.num_filters))
+        output = self.linear(output)
+        return output

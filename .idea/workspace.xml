@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b276552d-b40e-4f16-98e2-3f59e72d58de" name="Default Changelist" comment="">
+    <list default="true" id="b276552d-b40e-4f16-98e2-3f59e72d58de" name="Default Changelist" comment="complete valid epoch">
+      <change afterPath="$PROJECT_DIR$/models/zero_shot_text_classify.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/piplines/text_classify_pipline.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test_predict_main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/configs.py" beforeDir="false" afterPath="$PROJECT_DIR$/configs.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/datasets/common/vocab.py" beforeDir="false" afterPath="$PROJECT_DIR$/datasets/common/vocab.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/datasets/text_classify_dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/datasets/text_classify_dataset.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/eval/text_classify_meters.py" beforeDir="false" afterPath="$PROJECT_DIR$/eval/text_classify_meters.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/train_val_main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/common/encoder.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/common/encoder.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/text_classify_kernels.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/text_classify_kernels.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/container.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/container.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils/env.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/env.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/meter.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/meter.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/text_process.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/text_utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,51 +57,7 @@
       <recent name="C:\Users\51694\PycharmProjects\likdo" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.main">
-    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="likdo" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="my_do" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="likdo" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/my_image_caption" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/my_image_caption/my_do.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Python.test_predict_main">
     <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="likdo" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -114,6 +80,28 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="test_predict_main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="likdo" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test_predict_main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="text_classify_dataset" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="likdo" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -128,6 +116,28 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/datasets/text_classify_dataset.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="train_val_main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="likdo" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="C:\Users\51694\PycharmProjects\likdo\train_val_main.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -160,11 +170,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.main" />
+        <item itemvalue="Python.test_predict_main" />
+        <item itemvalue="Python.train_val_main" />
         <item itemvalue="Python.text_classify_dataset" />
         <item itemvalue="Python.test" />
         <item itemvalue="Python.vocab" />
-        <item itemvalue="Python.my_do" />
       </list>
     </recent_temporary>
   </component>
@@ -183,7 +193,7 @@
       <workItem from="1605179580006" duration="1432000" />
       <workItem from="1605234891029" duration="27000" />
       <workItem from="1605247384020" duration="30385000" />
-      <workItem from="1605668158552" duration="11683000" />
+      <workItem from="1605668158552" duration="35868000" />
     </task>
     <task id="LOCAL-00001" summary="docker work">
       <created>1604491391895</created>
@@ -290,7 +300,14 @@
       <option name="project" value="LOCAL" />
       <updated>1605789781708</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="complete valid epoch">
+      <created>1605791175765</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1605791175765</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -323,10 +340,10 @@
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state x="259" y="8" key="#SSH_Configurations/0.0.1366.728@0.0.1366.728" timestamp="1604562815452" />
-    <state x="269" y="0" key="CommitChangelistDialog2" timestamp="1605789780333">
+    <state x="269" y="0" key="CommitChangelistDialog2" timestamp="1605860504198">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state x="269" y="0" key="CommitChangelistDialog2/0.0.1366.728@0.0.1366.728" timestamp="1605789780333" />
+    <state x="269" y="0" key="CommitChangelistDialog2/0.0.1366.728@0.0.1366.728" timestamp="1605860504198" />
     <state x="463" y="118" key="FileChooserDialogImpl" timestamp="1604566136497">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
@@ -335,38 +352,38 @@
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state x="555" y="261" key="Github.ShareDialog/0.0.1366.728@0.0.1366.728" timestamp="1604491415379" />
-    <state width="1323" height="309" key="GridCell.Tab.0.bottom" timestamp="1605791166658">
+    <state width="1323" height="220" key="GridCell.Tab.0.bottom" timestamp="1605961331150">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1323" height="309" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1605791166658" />
-    <state width="1323" height="309" key="GridCell.Tab.0.center" timestamp="1605791166658">
+    <state width="1323" height="220" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1605961331150" />
+    <state width="1323" height="220" key="GridCell.Tab.0.center" timestamp="1605961331150">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1323" height="309" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1605791166658" />
-    <state width="1323" height="309" key="GridCell.Tab.0.left" timestamp="1605791166658">
+    <state width="1323" height="220" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1605961331150" />
+    <state width="1323" height="220" key="GridCell.Tab.0.left" timestamp="1605961331150">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1323" height="309" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1605791166658" />
-    <state width="1323" height="309" key="GridCell.Tab.0.right" timestamp="1605791166658">
+    <state width="1323" height="220" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1605961331150" />
+    <state width="1323" height="220" key="GridCell.Tab.0.right" timestamp="1605961331150">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1323" height="309" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1605791166658" />
-    <state width="1323" height="220" key="GridCell.Tab.1.bottom" timestamp="1605790956576">
+    <state width="1323" height="220" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1605961331150" />
+    <state width="1323" height="220" key="GridCell.Tab.1.bottom" timestamp="1605961328890">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1323" height="220" key="GridCell.Tab.1.bottom/0.0.1366.728@0.0.1366.728" timestamp="1605790956576" />
-    <state width="1323" height="220" key="GridCell.Tab.1.center" timestamp="1605790956576">
+    <state width="1323" height="220" key="GridCell.Tab.1.bottom/0.0.1366.728@0.0.1366.728" timestamp="1605961328890" />
+    <state width="1323" height="220" key="GridCell.Tab.1.center" timestamp="1605961328890">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1323" height="220" key="GridCell.Tab.1.center/0.0.1366.728@0.0.1366.728" timestamp="1605790956576" />
-    <state width="1323" height="220" key="GridCell.Tab.1.left" timestamp="1605790956576">
+    <state width="1323" height="220" key="GridCell.Tab.1.center/0.0.1366.728@0.0.1366.728" timestamp="1605961328890" />
+    <state width="1323" height="220" key="GridCell.Tab.1.left" timestamp="1605961328889">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1323" height="220" key="GridCell.Tab.1.left/0.0.1366.728@0.0.1366.728" timestamp="1605790956576" />
-    <state width="1323" height="220" key="GridCell.Tab.1.right" timestamp="1605790956576">
+    <state width="1323" height="220" key="GridCell.Tab.1.left/0.0.1366.728@0.0.1366.728" timestamp="1605961328889" />
+    <state width="1323" height="220" key="GridCell.Tab.1.right" timestamp="1605961328890">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1323" height="220" key="GridCell.Tab.1.right/0.0.1366.728@0.0.1366.728" timestamp="1605790956576" />
+    <state width="1323" height="220" key="GridCell.Tab.1.right/0.0.1366.728@0.0.1366.728" timestamp="1605961328890" />
     <state x="211" y="100" key="PyMappingSimpleResolveDialog" timestamp="1604767996719">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
@@ -387,6 +404,14 @@
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state width="691" height="372" key="XDebugger.FullValuePopup/0.0.1366.728@0.0.1366.728" timestamp="1605449581851" />
+    <state x="242" y="0" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1605862502650">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="242" y="0" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.0.1366.728@0.0.1366.728" timestamp="1605862502650" />
+    <state x="227" y="93" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2" timestamp="1605861274678">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="227" y="93" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/0.0.1366.728@0.0.1366.728" timestamp="1605861274678" />
     <state x="474" y="248" key="com.jetbrains.plugins.remotesdk.ui.RemoteMappingsConfiguration" timestamp="1604566155167">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
@@ -399,98 +424,113 @@
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state x="366" y="151" key="git4idea.merge.GitPullDialog/0.0.1366.728@0.0.1366.728" timestamp="1604986078999" />
-    <state x="346" y="49" width="672" height="678" key="search.everywhere.popup" timestamp="1605433798990">
+    <state x="346" y="49" width="672" height="678" key="search.everywhere.popup" timestamp="1605960644269">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state x="346" y="49" width="672" height="678" key="search.everywhere.popup/0.0.1366.728@0.0.1366.728" timestamp="1605433798990" />
+    <state x="346" y="49" width="672" height="678" key="search.everywhere.popup/0.0.1366.728@0.0.1366.728" timestamp="1605960644269" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+        <line-breakpoint suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/datasets/common/vocab.py</url>
-          <line>128</line>
+          <line>134</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+        <line-breakpoint suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/datasets/common/vocab.py</url>
-          <line>97</line>
+          <line>103</line>
           <option name="timeStamp" value="5" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+        <line-breakpoint suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/old_code/model.py</url>
           <line>70</line>
           <option name="timeStamp" value="19" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+        <line-breakpoint suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/models/image_caption_kernels.py</url>
           <line>23</line>
           <option name="timeStamp" value="23" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+        <line-breakpoint suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/old_code/my_do.py</url>
           <line>60</line>
           <option name="timeStamp" value="30" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+        <line-breakpoint suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/models/vqa_kernels.py</url>
           <line>15</line>
           <option name="timeStamp" value="32" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+        <line-breakpoint suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/models/vqa_kernels.py</url>
           <line>16</line>
           <option name="timeStamp" value="33" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+        <line-breakpoint suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/datasets/vqa_dataset.py</url>
           <line>94</line>
           <option name="timeStamp" value="35" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+        <line-breakpoint suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/datasets/vqa_dataset.py</url>
           <line>68</line>
           <option name="timeStamp" value="36" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+        <line-breakpoint suspend="THREAD" type="python-line">
           <url>file://$USER_HOME$/AppData/Local/JetBrains/PyCharm2020.1/remote_sources/1094682785/-1384471744/torch/nn/modules/loss.py</url>
           <line>430</line>
           <option name="timeStamp" value="41" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+        <line-breakpoint suspend="THREAD" type="python-line">
           <url>mock:///</url>
           <line>430</line>
           <option name="timeStamp" value="42" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+        <line-breakpoint suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/models/image_caption_kernels.py</url>
           <line>61</line>
           <option name="timeStamp" value="48" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+        <line-breakpoint suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/datasets/text_classify_dataset.py</url>
           <line>16</line>
           <option name="timeStamp" value="65" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+        <line-breakpoint suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/datasets/common/vocab.py</url>
-          <line>106</line>
+          <line>112</line>
           <option name="timeStamp" value="66" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+        <line-breakpoint suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/datasets/text_classify_dataset.py</url>
           <line>33</line>
           <option name="timeStamp" value="67" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+        <line-breakpoint suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/utils/env.py</url>
-          <line>146</line>
+          <line>145</line>
           <option name="timeStamp" value="68" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/eval/text_classify_meters.py</url>
-          <line>10</line>
-          <option name="timeStamp" value="69" />
+          <line>18</line>
+          <option name="timeStamp" value="73" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/train_val_main.py</url>
+          <line>104</line>
+          <option name="timeStamp" value="77" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/train_val_main.py</url>
+          <line>94</line>
+          <option name="timeStamp" value="78" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/test_predict_main.py</url>
+          <line>18</line>
+          <option name="timeStamp" value="80" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -500,9 +540,10 @@
     <SUITE FILE_PATH="coverage/likdo$vqa_dataset.coverage" NAME="vqa_dataset Coverage Results" MODIFIED="1604733608336" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/datasets" />
     <SUITE FILE_PATH="coverage/likdo$image_caption_dataest.coverage" NAME="image_caption_dataest Coverage Results" MODIFIED="1604732101917" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/datasets" />
     <SUITE FILE_PATH="coverage/likdo$my_do.coverage" NAME="my_do Coverage Results" MODIFIED="1604759791651" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/my_image_caption" />
-    <SUITE FILE_PATH="coverage/likdo$text_classify_dataset.coverage" NAME="text_classify_dataset Coverage Results" MODIFIED="1605703312894" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/datasets" />
+    <SUITE FILE_PATH="coverage/likdo$text_classify_dataset.coverage" NAME="text_classify_dataset Coverage Results" MODIFIED="1605946047378" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/datasets" />
     <SUITE FILE_PATH="coverage/likdo$train.coverage" NAME="train Coverage Results" MODIFIED="1604648918304" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/my_image_caption" />
+    <SUITE FILE_PATH="coverage/likdo$test_predict_main.coverage" NAME="test_predict_main Coverage Results" MODIFIED="1605961283134" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/likdo$vocab.coverage" NAME="vocab Coverage Results" MODIFIED="1605000591268" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/datasets/common" />
-    <SUITE FILE_PATH="coverage/likdo$main.coverage" NAME="main Coverage Results" MODIFIED="1605791166649" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/likdo$main.coverage" NAME="main Coverage Results" MODIFIED="1605950123097" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

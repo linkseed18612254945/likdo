@@ -21,7 +21,6 @@ class TrainEnv(object):
             'backward:before', 'backward:after',
         })
 
-
     @property
     def model(self):
         return self._model
@@ -148,4 +147,3 @@ class TrainEnv(object):
             evaluate_meter.update(loss, feed_dict, output_dict)
             pbar.set_description(desc=f'Validating {epoch}', refresh=True)
         evaluate_meter.evaluate()
-
